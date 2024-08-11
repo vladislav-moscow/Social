@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useUserStore } from '../../store/useUserStore';
 import { MoreVert } from '@mui/icons-material';
-//import { Users } from '../../Data';
-
 import './post.css';
 
 const Post = ({ post }) => {

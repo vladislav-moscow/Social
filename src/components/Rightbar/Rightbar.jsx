@@ -1,10 +1,12 @@
 import './rightbar.css';
-
-import {Users} from '../../Data'
+import { useUserStore } from '../../store/useUserStore';
 import Online from '../Online/Online';
 
 
-export default function Rightbar({ profile }) {
+const Rightbar = ({ profile }) => {
+	// Получаем список пользователей из Zustand Store
+  const users = useUserStore((state) => state.users);
+
 	const HomeRightbar = () => {
 		return (
 			<>
@@ -17,7 +19,7 @@ export default function Rightbar({ profile }) {
 				<img className='rightbarAd' src='assets/ad.png' alt='' />
 				<h4 className='rightbarTitle'>В сети:</h4>
 				<ul className='rightbarFriendList'>
-				{Users.map((user) => (
+				{users.map((user) => (
             <Online key={user.id} user={user} />
           ))}
 				</ul>
@@ -105,3 +107,5 @@ export default function Rightbar({ profile }) {
 		</div>
 	);
 }
+
+export default Rightbar;

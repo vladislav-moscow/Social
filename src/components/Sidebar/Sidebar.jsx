@@ -1,9 +1,13 @@
 import { Bookmark, Chat, Event, Group, HelpOutline, PlayCircleFilledOutlined, RssFeed, School, WorkOutline } from '@mui/icons-material';
-import './sidebar.css';
-import { Users } from '../../Data';
+import { useUserStore } from '../../store/useUserStore';
 import Friend from '../Friend/Friend';
 
+import './sidebar.css';
+
 const Sidebar = () => {
+	// Получаем список пользователей из Zustand Store
+  const users = useUserStore((state) => state.users);
+	
 	return (
 		<div className='sidebar'>
 			<div className='sidebarWrapper'>
@@ -47,7 +51,7 @@ const Sidebar = () => {
 				</ul>
 				<hr className='sidebarHr' />
 				<ul className='sidebarFriendList'>
-				{Users.map((user) => (
+				{users.map((user) => (
             <Friend key={user.id} user={user} />
           ))}
 				</ul>
