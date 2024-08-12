@@ -53,7 +53,7 @@ const Post = ({ post }) => {
 							onClick={likeHandler}
 							alt=''
 						/>
-						<span className='postLikeCounter'>{likeState.likeCount} человек понравилось</span>
+						<span className='postLikeCounter'>{likeState.likeCount} нравится</span>
 					</div>
 					<div className='postBottomRight'>
 						<span className='postCommentText'>{post.comment} комментария</span>

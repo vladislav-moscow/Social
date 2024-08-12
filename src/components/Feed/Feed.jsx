@@ -1,16 +1,18 @@
 import Post from '../Post/Post';
 import Share from '../Share/Share';
-
-import {Posts} from '../../Data'
+import { usePostStore } from '../../store/usePostStore';
 
 import './feed.css';
 
 const Feed = () => {
+	// Получаем посты из Zustand Store
+	const posts = usePostStore((state) => state.posts);
+
 	return (
 		<div className='feed'>
 			<div className='feedWrapper'>
 				<Share />
-				{Posts.map((post) => (
+				{posts.map((post) => (
 					<Post key={post.id} post={post} />
 				))}
 			</div>
