@@ -1,11 +1,13 @@
 //import Home from './pages/Home/Home';
-import Profile from './pages/Profile/Profile';
+//import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
+//import Profile from './pages/Profile/Profile';
 
 function App() {
 	return (
-		<div>
-			<Profile />
-		</div>
+		<>
+			<Register />
+		</>
 	);
 }
 
