@@ -7,7 +7,7 @@ const Login = () => {
 				<div className='loginLeft'>
 					<h3 className='loginLogo'>SocialApp</h3>
 					<span className='loginDesc'>
-					Общайтесь с друзьями и окружающим миром!
+						Общайтесь с друзьями и окружающим миром!
 					</span>
 				</div>
 				<div className='loginRight'>
@@ -15,10 +15,12 @@ const Login = () => {
 						<input placeholder='Ваша почта' className='loginInput' />
 						<input placeholder='Пароль' className='loginInput' />
 						<button className='loginButton'>Вход</button>
-						<span className='loginForgot'>Забыли пароль?</span>
-						<button className='loginRegisterButton'>
-							Регистрация
-						</button>
+						<div className='loginWrapperBtn'>
+							<span className='loginForgot'>Забыли пароль?</span>
+							<span className='loginRegisterButton'>
+								Вы еще не зарегистрированы?
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
