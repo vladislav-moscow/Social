@@ -1,0 +1,10 @@
+:root {
+	--mainColor: #013cff;
+}
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Roboto', sans-serif;
+}
+
+
