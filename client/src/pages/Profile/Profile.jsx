@@ -6,6 +6,8 @@ import Feed from '../../components/Feed/Feed';
 import './profile.css';
 
 const Profile = () => {
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+
 	return (
 		<>
 			<Topbar />
@@ -16,12 +18,12 @@ const Profile = () => {
 					<div className="profileCover">
               <img
                 className="profileCoverImg"
-                src="assets/post/3.jpg"
+                src={`${PF}post/3.jpg`}
                 alt=""
               />
               <img
                 className="profileUserImg"
-                src="assets/person/7.jpg"
+                src={`${PF}person/7.jpg`}
                 alt=""
               />
             </div>

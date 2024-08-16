@@ -9,11 +9,14 @@ const Post = ({ post }) => {
 		likeCount: post.like,
 		isLiked: false,
 	});
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 
 	/// Функция добавления и удаления лайка с поста
 	const likeHandler = () => {
 		setLikeState((prevState) => ({
-			likeCount: prevState.isLiked ? prevState.likeCount - 1 : prevState.likeCount + 1,
+			likeCount: prevState.isLiked
+				? prevState.likeCount - 1
+				: prevState.likeCount + 1,
 			isLiked: !prevState.isLiked,
 		}));
 	};
@@ -29,12 +32,14 @@ const Post = ({ post }) => {
 			<div className='postWrapper'>
 				<div className='postTop'>
 					<div className='postTopLeft'>
-					<img
+						<img
 							className='postProfileImg'
-							src={user?.profilePicture || 'default-avatar.png'}
+							src={PF+user?.profilePicture || 'default-avatar.png'}
 							alt={user ? `${user.username}'s avatar` : 'default avatar'}
 						/>
-						<span className='postUsername'>{user?.username || 'Unknown User'}</span>
+						<span className='postUsername'>
+							{user?.username || 'Unknown User'}
+						</span>
 						<span className='postDate'>{post.date}</span>
 					</div>
 					<div className='postTopRight'>
@@ -43,17 +48,19 @@ const Post = ({ post }) => {
 				</div>
 				<div className='postCenter'>
 					<span className='postText'>{post?.desc}</span>
-					<img className='postImg' src={post?.photo} alt='ImgPost' />
+					<img className='postImg' src={PF+post?.photo} alt='ImgPost' />
 				</div>
 				<div className='postBottom'>
 					<div className='postBottomLeft'>
 						<img
 							className='likeIcon'
-							src='assets/heart.png'
+							src={`${PF}heart.png`}
 							onClick={likeHandler}
 							alt=''
 						/>
-						<span className='postLikeCounter'>{likeState.likeCount} нравится</span>
+						<span className='postLikeCounter'>
+							{likeState.likeCount} нравится
+						</span>
 					</div>
 					<div className='postBottomRight'>
 						<span className='postCommentText'>{post.comment} комментария</span>
