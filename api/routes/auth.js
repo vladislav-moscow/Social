@@ -24,10 +24,25 @@ router.post('/register', async (req, res) => {
 	}catch (err) {
 		res.status(500).json(err)
 	}
+});
 
-	//save user and respond
-    
-	
+//Вход в систему
+router.post("/login", async (req, res) => {
+  try {
+		//нахожу пользователя в БД по Email
+    const user = await User.findOne({ email: req.body.email });
+		// еслм не нашел такого выдаю ошибку
+    !user && res.status(404).json("Пользователь не найден");
+
+		//проверяю пароль в БД и введеный  
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
+		//если не совпадают выбрасываю ошибку
+    !validPassword && res.status(400).json("Неверный пароль")
+		// отправляю ответ
+    res.status(200).json(user)
+  } catch (err) {
+    res.status(500).json(err)
+  }
 });
 
 module.exports = router;
