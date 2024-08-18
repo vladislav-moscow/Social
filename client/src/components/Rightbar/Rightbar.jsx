@@ -3,20 +3,14 @@ import { useUserStore } from '../../store/useUserStore';
 import Online from '../Online/Online';
 
 
-const Rightbar = ({ profile }) => {
+const Rightbar = ({ user }) => {
 	// Получаем список пользователей из Zustand Store
   const users = useUserStore((state) => state.users);
 
 	const HomeRightbar = () => {
 		return (
 			<>
-				<div className='birthdayContainer'>
-					<img className='birthdayImg' src='assets/gift.png' alt='' />
-					<span className='birthdayText'>
-						<b>Pola Foster</b> and <b>3 other friends</b> have a birhday today.
-					</span>
-				</div>
-				<img className='rightbarAd' src='assets/ad.png' alt='' />
+				
 				<h4 className='rightbarTitle'>В сети:</h4>
 				<ul className='rightbarFriendList'>
 				{users.map((user) => (
@@ -34,15 +28,15 @@ const Rightbar = ({ profile }) => {
 				<div className='rightbarInfo'>
 					<div className='rightbarInfoItem'>
 						<span className='rightbarInfoKey'>Город:</span>
-						<span className='rightbarInfoValue'>Москва</span>
+						<span className='rightbarInfoValue'>{user.city}</span>
 					</div>
 					<div className='rightbarInfoItem'>
-						<span className='rightbarInfoKey'>From:</span>
-						<span className='rightbarInfoValue'>Madrid</span>
+						<span className='rightbarInfoKey'>Родной город:</span>
+						<span className='rightbarInfoValue'>{user.from}</span>
 					</div>
 					<div className='rightbarInfoItem'>
 						<span className='rightbarInfoKey'>Семейное положение:</span>
-						<span className='rightbarInfoValue'>Свободен/на</span>
+						<span className='rightbarInfoValue'>{user.relationship === 1 ? "Свободен/на" : user.relationship === 2 ? "Женат/Замужем" : user.relationship === 3 ? "В отношениях" : "нет данных"}</span>
 					</div>
 				</div>
 				<h4 className='rightbarTitle'>User friends</h4>
@@ -102,7 +96,7 @@ const Rightbar = ({ profile }) => {
 	return (
 		<div className='rightbar'>
 			<div className='rightbarWrapper'>
-				{profile ? <ProfileRightbar /> : <HomeRightbar />}
+				{user ? <ProfileRightbar /> : <HomeRightbar />}
 			</div>
 		</div>
 	);
