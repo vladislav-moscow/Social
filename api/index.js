@@ -1,15 +1,16 @@
 //подключаем все зависимости
-const expess = require('express');
-const app = expess();
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const userRoute = require('./routes/users');
-const authRoute = require('./routes/auth');
-const postsRoute = require('./routes/posts');
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import userRoute from './routes/users.js';
+import authRoute from './routes/auth.js';
+import postsRoute from './routes/posts.js';
 
 dotenv.config();
+
+const app = express();
 
 //подключаемся к базе данных
 const connect = async () => {
@@ -21,16 +22,17 @@ const connect = async () => {
 	}
 };
 
-//middleware
-app.use(expess.json());
+// Middleware
+app.use(express.json());
 app.use(helmet());
 app.use(morgan('common'));
 
-app.use("/api/users", userRoute);
-app.use("/api/auth", authRoute);
-app.use("/api/posts", postsRoute);
+// Роуты
+app.use('/api/users', userRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/posts', postsRoute);
 
 app.listen(6600, () => {
-	connect();
-	console.log('сервер запущен');
+  connect();
+  console.log('север ОК');
 });

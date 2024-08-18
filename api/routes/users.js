@@ -1,6 +1,8 @@
-const User = require('../models/User');
-const router = require('express').Router();
-const bcrypt = require('bcrypt');
+import { Router } from 'express';
+import User from '../models/User.js';
+import bcrypt from 'bcrypt';
+
+const router = Router();
 
 // Обновить данные пользователя
 router.put('/:id', async (req, res) => {
@@ -48,10 +50,14 @@ router.delete('/:id', async (req, res) => {
 });
 
 //Получить пользователя
-router.get('/:id', async (req, res) => {
+router.get('/', async (req, res) => {
+	const userId = req.query.userId;
+  const username = req.query.username;
 	try {
-		// находим пользователя по id в бд
-		const user = await User.findById(req.params.id);
+		// если есть id то находим пользователя по id в бд
+		const user = userId
+      ? await User.findById(userId)
+      : await User.findOne({ username: username });
 		// убираем ненужные свойства
 		const { password, updatedAt, ...other } = user._doc;
 		// Возвращаем остальные данные пользователя
@@ -61,10 +67,10 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-//подписаться на пользователя 
+//подписаться на пользователя
 
 /**
- * 
+ *
  */
 router.put('/:id/follow', async (req, res) => {
 	// Проверяем, что пользователь не пытается подписаться на самого себя
@@ -72,7 +78,7 @@ router.put('/:id/follow', async (req, res) => {
 		try {
 			// Ищем пользователя, на которого хотят подписаться
 			const user = await User.findById(req.params.id);
-			 // Ищем текущего пользователя, который хочет подписаться
+			// Ищем текущего пользователя, который хочет подписаться
 			const currentUser = await User.findById(req.body.userId);
 			// Проверяем, подписан ли текущий пользователь на этого пользователя
 			if (!user.followers.includes(req.body.userId)) {
@@ -120,4 +126,4 @@ router.put('/:id/unfollow', async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default router;
