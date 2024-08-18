@@ -2,11 +2,25 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import Topbar from '../../components/Topbar/Topbar';
 import Rightbar from '../../components/Rightbar/Rightbar';
 import Feed from '../../components/Feed/Feed';
-
+import PlaceIcon from '@mui/icons-material/Place';
+import FmdBadOutlinedIcon from '@mui/icons-material/FmdBadOutlined';
+import { useParams } from "react-router";
 import './profile.css';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Profile = () => {
+	const [user, setUser] = useState({});
+	const username = useParams().username;
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const res = await axios.get(`/api/users?username=${username}`);
+			setUser(res.data);
+		};
+		fetchUser();
+	}, [username]);
 
 	return (
 		<>
@@ -15,26 +29,34 @@ const Profile = () => {
 				<Sidebar />
 				<div className='profileRight'>
 					<div className='profilrRightTop'>
-					<div className="profileCover">
-              <img
-                className="profileCoverImg"
-                src={`${PF}post/3.jpg`}
-                alt=""
-              />
-              <img
-                className="profileUserImg"
-                src={`${PF}person/7.jpg`}
-                alt=""
-              />
-            </div>
-            <div className="profileInfo">
-                <h4 className="profileInfoName">Safak Kocaoglu</h4>
-                <span className="profileInfoDesc">Hello my friends!</span>
-            </div>
+						<div className='profileCover'>
+							<img className='profileCoverImg' src={`${PF}${user.coverPicture}`} alt='ProfileBg' />
+							<img
+								className='profileUserImg'
+								src={`${PF}${user.profilePicture}`}
+								alt='ProfileAvatar'
+							/>
+						</div>
+						<div className='profileInfo'>
+							<h4 className='profileInfoName'>{user.username}</h4>
+							<span className='profileInfoDesc'>
+								{user.desc}
+							</span>
+							<div className='profileInfoItem'>
+								<div className='profileInfoCityWrapper'>
+									<span className='profileInfoKey'><PlaceIcon/></span>
+									<span className='profileInfoValue'>{user.city}</span>
+								</div>
+								<div className='profileInfoCityWrapper cursor'>
+									<span className='profileInfoKey'><FmdBadOutlinedIcon/></span>
+									<span className='profileInfoValue'>Подробнее</span>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div className='profileRightBottom'>
-						<Feed />
-						<Rightbar profile />
+						<Feed username ={username}/>
+						<Rightbar user={user} />
 					</div>
 				</div>
 			</div>
