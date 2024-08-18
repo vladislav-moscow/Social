@@ -50,6 +50,12 @@
   margin: 20px 0;
 }
 
+.sidebarMyFriend {
+	font-size: 16px;
+	font-weight: 500;
+	margin-bottom: 15px;
+}
+
 .sidebarFriendList {
   padding: 0;
   margin: 0;
