@@ -1,104 +1,65 @@
-// validation.js
-
 /**
- * Валидаторы для полей формы.
- * @property {function(string): string|null} username - Валидатор для имени пользователя.
- * @property {function(string): string|null} email - Валидатор для электронной почты.
- * @property {function(string): string|null} phone - Валидатор для телефона.
- * @property {function(string): string|null} password - Валидатор для пароля.
- * @property {function(string): string|null} passwordAgain - Валидатор для подтверждения пароля.
+ * Валидация данных формы регистрации.
+ * @param {Object} values - Объект с полями формы регистрации.
+ * @param {string} values.username - Имя пользователя.
+ * @param {string} values.email - Адрес электронной почты.
+ * @param {string} values.password - Пароль пользователя.
+ * @param {string} values.passwordAgain - Подтверждение пароля.
+ * @returns {Object} Объект с ошибками, если они найдены.
  */
-const validators = {
-	/**
-	 * Валидатор для имени пользователя.
-	 * @param {string} value - Значение поля.
-	 * @returns {string|null} - Сообщение об ошибке или null, если валидация прошла успешно.
-	 */
-	username: (value) => {
-		if (!value) return 'Имя пользователя обязательно';
-		const regexText = /^[^!>?<_\-$№#@]+$/;
-		if (!regexText.test(value))
-			return 'Имя пользователя не должно содержать !>?<_-$№#@ символы';
-		return null;
-	},
+export const validateRegisterForm = (values) => {
+	const errors = {};
 
-	/**
-	 * Валидатор для электронной почты.
-	 * @param {string} value - Значение поля.
-	 * @returns {string|null} - Сообщение об ошибке или null, если валидация прошла успешно.
-	 */
-	email: (value) => {
-		if (!value) return 'Электронная почта обязательна';
-		if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value))
-			return 'Некорректный формат электронной почты';
-		return null;
-	},
+	// Проверка имени пользователя
+	if (!values.username) {
+		errors.username = 'Имя пользователя не должно быть пустым';
+	}
 
-	/**
-	 * Валидатор для телефона.
-	 * @param {string} value - Значение поля.
-	 * @returns {string|null} - Сообщение об ошибке или null, если валидация прошла успешно.
-	 */
-	phone: (value) => {
-		if (!value) return 'Телефон обязателен';
-		if (!/^\+?[0-9-]+$/.test(value)) return 'Некорректный номер телефона';
-		return null;
-	},
+	// Проверка email
+	if (!values.email) {
+		errors.email = 'Адрес электронной почты не должен быть пустым';
+	} else if (!/\S+@\S+\.\S+/.test(values.email)) {
+		errors.email = 'Некорректный адрес электронной почты';
+	}
 
-	/**
-	 * Валидатор для пароля.
-	 * @param {string} value - Значение поля.
-	 * @returns {string|null} - Сообщение об ошибке или null, если валидация прошла успешно.
-	 */
-	password: (value) => {
-		if (!value) return 'Пароль обязателен';
-		if (value.length < 5) return 'Пароль должен быть не менее 5 символов';
-		return null;
-	},
+	// Проверка пароля
+	if (!values.password) {
+		errors.password = 'Пароль не должен быть пустым';
+	} else if (values.password.length < 6) {
+		errors.password = 'Пароль должен содержать не менее 6 символов';
+	}
 
-	/**
-	 * Валидатор для подтверждения пароля.
-	 * @param {string} value - Значение поля.
-	 * @param {string} originalPassword - Оригинальный пароль для сравнения.
-	 * @returns {string|null} - Сообщение об ошибке или null, если валидация прошла успешно.
-	 */
-	passwordAgain: (value, originalPassword) => {
-		if (!value) return 'Повторите пароль';
-		if (value !== originalPassword) return 'Пароли не совпадают';
-		return null;
-	},
+	// Проверка повторного ввода пароля
+	if (values.passwordAgain !== values.password) {
+		errors.passwordAgain = 'Пароли не совпадают';
+	}
+
+	return errors;
 };
 
 /**
- * Функция для валидации формы на основе предоставленных валидаторов.
- *
- * @param {Object} formData - Данные формы, представленные в виде объекта.
- * @returns {Object} - Объект с сообщениями об ошибках для каждого поля формы.
+ * Валидация данных формы входа.
+ * @param {Object} values - Объект с полями формы входа.
+ * @param {string} values.email - Адрес электронной почты.
+ * @param {string} values.password - Пароль пользователя.
+ * @returns {Object} Объект с ошибками, если они найдены.
  */
-export function validateForm(formData) {
-	// Объект для хранения сообщений об ошибках
-	const validationErrors = {};
+export const validateLoginForm = (values) => {
+	const errors = {};
 
-	// Итерация по каждому полю формы
-	Object.entries(formData).forEach(([field, value]) => {
-		// Получение валидатора для текущего типа поля
-		const validator = validators[field];
+	// Проверка email
+	if (!values.email) {
+		errors.email = 'Адрес электронной почты не должен быть пустым';
+	} else if (!/\S+@\S+\.\S+/.test(values.email)) {
+		errors.email = 'Некорректный адрес электронной почты';
+	}
 
-		// Если валидатор существует, выполняем проверку
-		if (validator) {
-			// Для пароля и подтверждения пароля передаем оригинальный пароль
-			const errorMessage =
-				field === 'passwordAgain'
-					? validator(value, formData.password)
-					: validator(value);
+	// Проверка пароля
+	if (!values.password) {
+		errors.password = 'Пароль не должен быть пустым';
+	} else if (values.password.length < 5) {
+		errors.password = 'Пароль должен содержать не менее 5 символов';
+	}
 
-			// Если есть сообщение об ошибке, добавляем его в объект ошибок
-			if (errorMessage) {
-				validationErrors[field] = errorMessage;
-			}
-		}
-	});
-
-	// Возвращаем объект с сообщениями об ошибках
-	return validationErrors;
-}
+	return errors;
+};

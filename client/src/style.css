@@ -1,5 +1,5 @@
 :root {
-	--mainColor: #013cff;
+	--mainColor: #001eff;
 }
 * {
 	margin: 0;
@@ -11,3 +11,6 @@ a {
 	text-decoration: none;
 }
 
+.error {
+	color: red
+}
