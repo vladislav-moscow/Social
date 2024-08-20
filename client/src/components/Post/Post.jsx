@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 //import { useUserStore } from '../../store/useUserStore';
 import { MoreVert } from '@mui/icons-material';
 import './post.css';
@@ -55,7 +54,7 @@ const Post = ({ post }) => {
 						<Link to={`/profile/${user.username}`}>
 						<img
 							className='postProfileImg'
-							src={PF + user?.profilePicture || 'default-avatar.png'}
+							src={user.profilePicture ? PF+user.profilePicture : PF+'default-avatar.png'}
 							alt={user ? `${user.username}'s avatar` : 'default avatar'}
 						/>
 						</Link>
