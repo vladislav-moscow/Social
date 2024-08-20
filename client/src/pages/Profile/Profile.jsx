@@ -30,10 +30,14 @@ const Profile = () => {
 				<div className='profileRight'>
 					<div className='profilrRightTop'>
 						<div className='profileCover'>
-							<img className='profileCoverImg' src={`${PF}${user.coverPicture}`} alt='ProfileBg' />
+							<img className='profileCoverImg' src={user.coverPicture ? PF + user.coverPicture : PF + 'post/bg_default.jpg'} alt='ProfileBg' />
 							<img
 								className='profileUserImg'
-								src={`${PF}${user.profilePicture}`}
+								src={
+									user.profilePicture
+										? PF + user.profilePicture
+										: PF + 'person/noAvatar.png'
+								}
 								alt='ProfileAvatar'
 							/>
 						</div>
@@ -45,7 +49,7 @@ const Profile = () => {
 							<div className='profileInfoItem'>
 								<div className='profileInfoCityWrapper'>
 									<span className='profileInfoKey'><PlaceIcon/></span>
-									<span className='profileInfoValue'>{user.city}</span>
+									<span className='profileInfoValue'>{user.city ? user.city : 'нет данных'}</span>
 								</div>
 								<div className='profileInfoCityWrapper cursor'>
 									<span className='profileInfoKey'><FmdBadOutlinedIcon/></span>

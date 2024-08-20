@@ -1,8 +1,14 @@
 import { Chat, Notifications, Person, Search } from '@mui/icons-material';
 import './topbar.css';
 import { Link } from 'react-router-dom';
+import useAuthStore from '../../store/useAuthStore';
 
 const Topbar = () => {
+	// Получаем данные пользователя из стора
+	const user = useAuthStore((state) => state.getUser());
+
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+
 	return (
 		<div className='topbarContainer'>
 			<div className='topbarLeft'>
@@ -38,11 +44,17 @@ const Topbar = () => {
 						<span className='topbarIconBadge'>1</span>
 					</div>
 				</div>
+				<Link to={`/profile/${user.username}`}>
 				<img
-					src='/assets/person/1.jpg'
+					src={
+						user.profilePicture
+							? PF + user.profilePicture
+							: PF + 'person/noAvatar.png'
+					}
 					alt='avatarPerson'
 					className='topbarImg'
 				/>
+				</Link>
 			</div>
 		</div>
 	);
