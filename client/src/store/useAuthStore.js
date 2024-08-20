@@ -8,10 +8,31 @@ import axios from 'axios';
  * Включает действия для входа, регистрации, подписок и выхода из системы.
  */
 const useAuthStore = create(
-	devtools((set) => ({
+	devtools((set, get) => ({
 		user: JSON.parse(localStorage.getItem('user')) || null,
 		isFetching: false,
 		error: false,
+
+		// ===== Селекторы =====
+
+		/**
+		 * Получает текущего пользователя из состояния.
+		 * @returns {Object|null} - Данные пользователя или null, если пользователь не аутентифицирован.
+		 */
+		getUser: () => get().user,
+
+		/**
+		 * Проверяет, аутентифицирован ли пользователь.
+		 * @returns {boolean} - true, если пользователь аутентифицирован, иначе false.
+		 */
+		isAuthenticated: () => !!get().user,
+
+		/**
+		 * Получает конкретное свойство пользователя.
+		 * @param {string} key - Ключ свойства, которое необходимо получить.
+		 * @returns {*} - Значение свойства или undefined, если пользователь не аутентифицирован или свойство не существует.
+		 */
+		getUserProperty: (key) => get().user?.[key],
 
 		/**
 		 * Начало процесса аутентификации (вход в систему).
