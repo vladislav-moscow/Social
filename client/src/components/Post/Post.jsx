@@ -1,37 +1,49 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-//import { useUserStore } from '../../store/useUserStore';
 import { MoreVert } from '@mui/icons-material';
 import './post.css';
-import axios from 'axios';
 import { format, register } from 'timeago.js';
 import ru from 'timeago.js/lib/lang/ru';
+import useAuthStore from '../../store/useAuthStore';
+import usePostStore from '../../store/usePostStore';
+import axios from 'axios';
 
 // Регистрируем русскую локализацию
 register('ru', ru);
 
 const Post = ({ post }) => {
+	const [postUser, setPostUser] = useState(null);
+	// Получаем данные пользователя из стора
+	const user = useAuthStore((state) => state.user);
+
+	const toggleLike = usePostStore((state) => state.toggleLike);
+
 	// Форматируем дату с помощью timeago.js
-  const formattedDate = format(post.createdAt, 'ru');
+	const formattedDate = format(post.createdAt, 'ru');
 	const [likeState, setLikeState] = useState({
 		likeCount: post.likes.length,
-		isLiked: false,
+		isLiked: post.likes.includes(user._id),
 	});
-
-	const [user, setUser] = useState({});
 
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 
 	useEffect(() => {
-		const fetchUser = async () => {
-			const res = await axios.get(`/api/users?userId=${post.userId}`);
-			setUser(res.data);
+		const fetchPostUser = async () => {
+			try {
+				const res = await axios.get(`/api/users/${post.userId}`);
+				setPostUser(res.data);
+			} catch (err) {
+				console.error('Ошибка загрузки пользователя поста:', err);
+			}
 		};
-		fetchUser();
+
+		fetchPostUser();
 	}, [post.userId]);
 
-	/// Функция добавления и удаления лайка с поста
+	// Функция добавления и удаления лайка с поста
 	const likeHandler = () => {
+		toggleLike(post._id, user._id);
+
 		setLikeState((prevState) => ({
 			likeCount: prevState.isLiked
 				? prevState.likeCount - 1
@@ -40,28 +52,24 @@ const Post = ({ post }) => {
 		}));
 	};
 
-	// Получаем функцию getUserById из Zustand
-	//const getUserById = useUserStore((state) => state.getUserById);
-
-	// Ищем пользователя по id с использованием Zustand
-	//const user = getUserById(post?.userId);
-
 	return (
 		<div className='post'>
 			<div className='postWrapper'>
 				<div className='postTop'>
 					<div className='postTopLeft'>
 						<Link to={`/profile/${user.username}`}>
-						<img
-							className='postProfileImg'
-							src={user.profilePicture ? PF+user.profilePicture : PF+'default-avatar.png'}
-							alt={user ? `${user.username}'s avatar` : 'default avatar'}
-						/>
+							<img
+								className='postProfileImg'
+								src={
+									postUser.profilePicture
+										? PF + postUser.profilePicture
+										: PF + 'person/noAvatar.png'
+								}
+								alt={postUser.username}
+							/>
 						</Link>
-						
-						<span className='postUsername'>
-							{user?.username || 'Unknown User'}
-						</span>
+
+						<span className='postUsername'>{postUser.username}</span>
 						<span className='postDate'>{formattedDate}</span>
 					</div>
 					<div className='postTopRight'>
