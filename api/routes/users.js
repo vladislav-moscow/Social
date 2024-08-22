@@ -2,80 +2,80 @@ import { Router } from 'express';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 
-const router = Router();
+const router = Router(); // Создаем новый экземпляр Router.
 
-// Обновить данные пользователя
+// Обновление данных пользователя
 router.put('/:id', async (req, res) => {
-	// проверяем id из бд раверн параметру который в стоке или администратору
+	// Проверяем, что ID пользователя совпадает с ID в параметре URL или пользователь является администратором
 	if (req.body.userId === req.params.id || req.body.isAdmin) {
-		// если пользователь хочет обновить пароль то сгенерируем еще раз
+		// Если пользователь хочет обновить пароль, хэшируем новый пароль перед сохранением
 		if (req.body.password) {
 			try {
-				//получаем соль, хэшируем  пароль и обновляем
+				// Генерируем соль и хэшируем пароль
 				const salt = await bcrypt.genSalt(10);
 				req.body.password = await bcrypt.hash(req.body.password, salt);
 			} catch (err) {
-				return res.status(500).json(err);
+				return res.status(500).json(err); // Если произошла ошибка, возвращаем статус 500 и сообщение об ошибке
 			}
 		}
 		try {
-			//ищем пользователя в базе данных и получаем что он хочет обновить
+			// Обновляем данные пользователя в базе данных
 			const user = await User.findByIdAndUpdate(req.params.id, {
-				$set: req.body,
+				$set: req.body, // Обновляем только те поля, которые переданы в теле запроса
 			});
-			//получаем ответ
+			// Возвращаем сообщение об успешном обновлении
 			res.status(200).json('Данные пользователя обновлены');
 		} catch (err) {
-			return res.status(500).json(err);
+			return res.status(500).json(err); // Если произошла ошибка, возвращаем статус 500 и сообщение об ошибке
 		}
 	} else {
+		// Если ID пользователя не совпадает с ID в параметре URL и пользователь не является администратором, возвращаем ошибку 403
 		return res.status(403).json('Вы не можете обновить не свой аккаунт!');
 	}
 });
 
 // Удаление пользователя
 router.delete('/:id', async (req, res) => {
-	// проверяем есть ли такое пользователь с таким ид или является он админом
+	// Проверяем, что ID пользователя совпадает с ID в параметре URL или пользователь является администратором
 	if (req.body.userId === req.params.id || req.body.isAdmin) {
 		try {
-			//находи пользователь в бд и удаляем
+			// Находим пользователя в базе данных и удаляем его
 			await User.findByIdAndDelete(req.params.id);
-			res.status(200).json('Пользователь удален');
+			res.status(200).json('Пользователь удален'); // Возвращаем сообщение об успешном удалении
 		} catch (err) {
-			return res.status(500).json(err);
+			return res.status(500).json(err); // Если произошла ошибка, возвращаем статус 500 и сообщение об ошибке
 		}
 	} else {
+		// Если ID пользователя не совпадает с ID в параметре URL и пользователь не является администратором, возвращаем ошибку 403
 		return res.status(403).json('Вы не можете удалять не свой аккаунт!');
 	}
 });
 
-//Получить пользователя
+// Получение пользователя
 router.get('/', async (req, res) => {
+	// Получаем userId и username из запроса
 	const userId = req.query.userId;
-  const username = req.query.username;
-		try {
-		// если есть id то находим пользователя по id в бд
+	const username = req.query.username;
+	try {
+		// Если передан userId, ищем пользователя по ID, иначе ищем по имени пользователя
 		const user = userId
 			? await User.findById(userId)
 			: await User.findOne({ username: username });
-			if (!user) {
-				return res.status(404).json({ message: "Пользователь не найден" });
-			}
-		// убираем ненужные свойства
+		if (!user) {
+			// Если пользователь не найден, возвращаем статус 404 и сообщение об ошибке
+			return res.status(404).json({ message: 'Пользователь не найден' });
+		}
+		// Убираем ненужные свойства (например, пароль) из ответа
 		const { password, updatedAt, ...other } = user._doc;
 		// Возвращаем остальные данные пользователя
 		res.status(200).json(other);
 	} catch (err) {
-		console.error("Ошибка получения пользователя:", err);
-    res.status(500).json({ message: "Ошибка сервера", error: err.message });
+		console.error('Ошибка получения пользователя:', err); // Логируем ошибку на сервере
+		res.status(500).json({ message: 'Ошибка сервера', error: err.message }); // Возвращаем статус 500 и сообщение об ошибке
 	}
 });
 
-//подписаться на пользователя
-
-/**
- *
- */
+// Подписка на пользователя
 router.put('/:id/follow', async (req, res) => {
 	// Проверяем, что пользователь не пытается подписаться на самого себя
 	if (req.body.userId !== req.params.id) {
@@ -88,22 +88,24 @@ router.put('/:id/follow', async (req, res) => {
 			if (!user.followers.includes(req.body.userId)) {
 				// Если не подписан, добавляем текущего пользователя в список подписчиков
 				await user.updateOne({ $push: { followers: req.body.userId } });
-				// Добавляем пользователя, на которого подписываемся, в список подписок
+				// Добавляем пользователя, на которого подписываемся, в список подписок текущего пользователя
 				await currentUser.updateOne({ $push: { followings: req.params.id } });
-				res.status(200).json('user has been followed');
+				res.status(200).json('Пользователь добавлен в подписки');
 			} else {
-				res.status(403).json('you allready follow this user');
+				// Если текущий пользователь уже подписан, возвращаем ошибку 403
+				res.status(403).json('Вы уже подписаны на этого пользователя');
 			}
 		} catch (err) {
+			// Если произошла ошибка, возвращаем статус 500 и сообщение об ошибке
 			res.status(500).json(err);
 		}
 	} else {
-		res.status(403).json('you cant follow yourself');
+		// Если пользователь пытается подписаться на самого себя, возвращаем ошибку 403
+		res.status(403).json('Вы не можете подписаться на самого себя');
 	}
 });
 
-//отписаться от пользователя
-
+// Отписка от пользователя
 router.put('/:id/unfollow', async (req, res) => {
 	// Проверяем, что пользователь не пытается отписаться от самого себя
 	if (req.body.userId !== req.params.id) {
@@ -116,17 +118,20 @@ router.put('/:id/unfollow', async (req, res) => {
 			if (user.followers.includes(req.body.userId)) {
 				// Если подписан, удаляем текущего пользователя из списка подписчиков
 				await user.updateOne({ $pull: { followers: req.body.userId } });
-				// Удаляем пользователя, от которого отписываемся, из списка подписок
+				// Удаляем пользователя, от которого отписываемся, из списка подписок текущего пользователя
 				await currentUser.updateOne({ $pull: { followings: req.params.id } });
-				res.status(200).json('user has been unfollowed');
+				res.status(200).json('Пользователь удален из подписок');
 			} else {
-				res.status(403).json('you dont follow this user');
+				// Если текущий пользователь не подписан, возвращаем ошибку 403
+				res.status(403).json('Вы не подписаны на этого пользователя');
 			}
 		} catch (err) {
+			// Если произошла ошибка, возвращаем статус 500 и сообщение об ошибке
 			res.status(500).json(err);
 		}
 	} else {
-		res.status(403).json('you cant unfollow yourself');
+		// Если пользователь пытается отписаться от самого себя, возвращаем ошибку 403
+		res.status(403).json('Вы не можете отписаться от самого себя');
 	}
 });
 
