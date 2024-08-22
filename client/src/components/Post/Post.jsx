@@ -6,41 +6,32 @@ import { format, register } from 'timeago.js';
 import ru from 'timeago.js/lib/lang/ru';
 import useAuthStore from '../../store/useAuthStore';
 import usePostStore from '../../store/usePostStore';
-import axios from 'axios';
 
 // Регистрируем русскую локализацию
 register('ru', ru);
 
 const Post = ({ post }) => {
-	const [postUser, setPostUser] = useState(null);
 	// Получаем данные пользователя из стора
 	const user = useAuthStore((state) => state.user);
-
+	const fetchPostUser = usePostStore((state) => state.fetchPostUser);
+	const postUsers = usePostStore((state) => state.postUsers);
 	const toggleLike = usePostStore((state) => state.toggleLike);
-
-	// Форматируем дату с помощью timeago.js
-	const formattedDate = format(post.createdAt, 'ru');
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 	const [likeState, setLikeState] = useState({
 		likeCount: post.likes.length,
 		isLiked: post.likes.includes(user._id),
 	});
-
-	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+	// Форматируем дату с помощью timeago.js
+	const formattedDate = format(post.createdAt, 'ru');
 
 	useEffect(() => {
-		const fetchPostUser = async () => {
-			try {
-				const res = await axios.get(`/api/users/${post.userId}`);
-				setPostUser(res.data);
-			} catch (err) {
-				console.error('Ошибка загрузки пользователя поста:', err);
-			}
-		};
+		fetchPostUser(post.userId);
+	}, [post.userId, fetchPostUser]);
 
-		fetchPostUser();
-	}, [post.userId]);
+	const postUser = postUsers[post.userId];
 
-	// Функция добавления и удаления лайка с поста
+	if (!postUser) return null;
+
 	const likeHandler = () => {
 		toggleLike(post._id, user._id);
 
@@ -57,7 +48,7 @@ const Post = ({ post }) => {
 			<div className='postWrapper'>
 				<div className='postTop'>
 					<div className='postTopLeft'>
-						<Link to={`/profile/${user.username}`}>
+						<Link to={`/profile/${postUser.username}`}>
 							<img
 								className='postProfileImg'
 								src={
