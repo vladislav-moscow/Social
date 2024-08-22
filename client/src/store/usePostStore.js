@@ -9,6 +9,7 @@ import axios from 'axios';
 const usePostStore = create(
 	devtools((set, get) => ({
 		posts: JSON.parse(localStorage.getItem('posts')) || [],
+		postUsers: {}, // Хранение пользователей по ID
 		isFetching: false,
 		error: false,
 
@@ -71,6 +72,28 @@ const usePostStore = create(
 			localStorage.removeItem('posts');
 			set({ posts: [], isFetching: false, error: false });
 		},
+
+		/**
+     * Асинхронная функция для получения данных пользователя, создавшего пост.
+     * @param {string} userId - ID пользователя, создавшего пост.
+     */
+    fetchPostUser: async (userId) => {
+      const existingUser = get().postUsers[userId];
+
+      // Если пользователь уже загружен, ничего не делаем
+      if (existingUser) {
+        return;
+      }
+
+      try {
+        const res = await axios.get(`/api/users?userId=${userId}`);
+        set((state) => ({
+          postUsers: { ...state.postUsers, [userId]: res.data },
+        }));
+      } catch (err) {
+        console.error('Ошибка загрузки пользователя поста:', err);
+      }
+    },
 
 		/**
 		 * Асинхронная функция для лайка поста.
