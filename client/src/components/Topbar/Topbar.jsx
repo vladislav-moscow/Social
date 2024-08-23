@@ -1,4 +1,6 @@
 import { Chat, Notifications, Person, Search } from '@mui/icons-material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import './topbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -75,7 +77,7 @@ const Topbar = () => {
 						<span className='topbarIconBadge'>1</span>
 					</div>
 				</div>
-				<div className='topbarProfile'>
+				<div className='topbarProfile' onClick={toggleMenu}>
 					<img
 						src={
 							user.profilePicture
@@ -84,9 +86,12 @@ const Topbar = () => {
 						}
 						alt='avatarPerson'
 						className='topbarImg'
-						onClick={toggleMenu}
 					/>
-					{/* Отображаем меню при необходимости */}
+					{isMenuOpen ? (
+						<KeyboardArrowUpIcon className='dropdownArrow' />
+					) : (
+						<KeyboardArrowDownIcon className='dropdownArrow' />
+					)}
 					{isMenuOpen && (
 						<div className='dropdownMenu'>
 							<Link to={`/profile/${user.username}`} className='menuItem'>
