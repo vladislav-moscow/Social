@@ -4,10 +4,25 @@
 	margin-bottom: 15px;
 }
 
+/* Обнуляем стили для ссылки */
+.sidebarFriend a {
+  text-decoration: none;
+  color: inherit; /* Сохраняем исходный цвет текста */
+  display: flex; /* Используем flexbox для выравнивания */
+  align-items: center; /* Центрируем элементы по вертикали */
+}
+
+/* Для аватарки */
 .sidebarFriendImg {
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	object-fit: cover;
-	margin-right: 10px;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px; /* Отступ между аватаркой и именем */
+	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+}
+
+/* Для имени пользователя */
+.sidebarFriendName {
+  font-size: 17px;
 }
