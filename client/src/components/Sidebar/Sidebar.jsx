@@ -6,15 +6,14 @@ import {
 	School,
 	WorkOutline,
 } from '@mui/icons-material';
-import { useUserStore } from '../../store/useUserStore';
+import useAuthStore from '../../store/useAuthStore';
 import Friend from '../Friend/Friend';
 import { Link } from 'react-router-dom';
-
 import './sidebar.css';
 
 const Sidebar = () => {
-	// Получаем список пользователей из Zustand Store
-	const users = useUserStore((state) => state.users);
+	// Получаем текущего пользователя из Zustand Store
+	const user = useAuthStore((state) => state.user);
 
 	return (
 		<div className='sidebar'>
@@ -55,9 +54,14 @@ const Sidebar = () => {
 				<hr className='sidebarHr' />
 				<h2 className='sidebarMyFriend'>Мои друзья:</h2>
 				<ul className='sidebarFriendList'>
-					{users.map((user) => (
-						<Friend key={user.id} user={user} />
-					))}
+					{/* Проверяем, есть ли друзья у пользователя */}
+					{user.followers && user.followers.length > 0 ? (
+						user.followers.map((friendId) => (
+							<Friend key={friendId} friendId={friendId} />
+						))
+					) : (
+						<p>У вас пока нет друзей.</p>
+					)}
 				</ul>
 			</div>
 		</div>
