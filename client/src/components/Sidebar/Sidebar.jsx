@@ -10,10 +10,29 @@ import useAuthStore from '../../store/useAuthStore';
 import Friend from '../Friend/Friend';
 import { Link } from 'react-router-dom';
 import './sidebar.css';
+import { useEffect } from 'react';
+import useUserStore from '../../store/useUserStore';
 
 const Sidebar = () => {
 	// Получаем текущего пользователя из Zustand Store
 	const user = useAuthStore((state) => state.user);
+	const fetchUser = useUserStore((state) => state.fetchUser);
+	const getUserById = useUserStore((state) => state.getUserById);
+	const isFetching = useUserStore((state) => state.isFetching);
+	const error = useUserStore((state) => state.error);
+
+	useEffect(() => {
+		if (user && user.followings) {
+			user.followings.forEach((friendId) => {
+				if (!getUserById(friendId)) {
+					fetchUser(friendId);
+				}
+			});
+		}
+	}, [user, fetchUser, getUserById]);
+
+	if (isFetching) return <p>Загрузка...</p>;
+	if (error) return <p>Ошибка: {error}</p>;
 
 	return (
 		<div className='sidebar'>
