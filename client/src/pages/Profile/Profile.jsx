@@ -7,24 +7,80 @@ import FmdBadOutlinedIcon from '@mui/icons-material/FmdBadOutlined';
 import { useParams } from 'react-router';
 import './profile.css';
 import { useEffect, useState } from 'react';
+import useUserStore from '../../store/useUserStore';
+import useAuthStore from '../../store/useAuthStore';
 import axios from 'axios';
 
+/**
+ * Компонент для отображения профиля пользователя.
+ * @returns {JSX.Element|null} - Возвращает JSX элемент с информацией о пользователе или null, если данные не загружены.
+ */
 const Profile = () => {
-	const [user, setUser] = useState({});
-	const username = useParams().username;
-	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+	// Получаем имя пользователя из параметров маршрута
+	const { username } = useParams();
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER; // Путь к публичной папке для загрузки изображений
 
+	// Получаем текущего пользователя (залогиненного) и функции для подписки/отписки из стора
+	const currentUser = useAuthStore((state) => state.user);
+	const followUser = useAuthStore((state) => state.follow);
+	const unfollowUser = useAuthStore((state) => state.unfollow);
+
+	// Получаем данные пользователя по имени пользователя и функцию для их загрузки из стора
+	const user = useUserStore((state) => state.getUserByUsername(username));
+	const fetchUserByUsername = useUserStore(
+		(state) => state.fetchUserByUsername
+	);
+
+	const [followed, setFollowed] = useState(false); // Локальное состояние для отслеживания подписки
+
+	// Загружаем данные пользователя, если они еще не загружены
 	useEffect(() => {
-		const fetchUser = async () => {
-			const res = await axios.get(`/api/users?username=${username}`);
-			setUser(res.data);
-		};
-		fetchUser();
-	}, [username]);
+		if (!user) {
+			fetchUserByUsername(username);
+		}
+	}, [username, user, fetchUserByUsername]);
 
+	// Определяем состояние подписки при загрузке данных пользователя
+	useEffect(() => {
+		if (user && currentUser) {
+			setFollowed(currentUser.followings.includes(user._id));
+		}
+	}, [user, currentUser]);
 
-	// Если пользователь не найден или данные еще загружаются, можно вернуть загрузочный индикатор или ничего не отображать
-	if (!user) return null; // Можно заменить на индикатор загрузки
+	/**
+	 * Обработчик клика для подписки или отписки от пользователя.
+	 * Выполняет запрос на сервер для изменения статуса подписки и обновляет состояние.
+	 */
+	const handleClick = async () => {
+		try {
+			if (followed) {
+				const response = await axios.put(`/api/users/${user._id}/unfollow`, {
+					userId: currentUser._id,
+				});
+				if (response.status === 200) {
+					unfollowUser(user._id); // Обновляем состояние в store
+					setFollowed(false); // Обновляем локальное состояние
+				} else {
+					console.error('Ошибка при отписке:', response);
+				}
+			} else {
+				const response = await axios.put(`/api/users/${user._id}/follow`, {
+					userId: currentUser._id,
+				});
+				if (response.status === 200) {
+					followUser(user._id); // Обновляем состояние в store
+					setFollowed(true); // Обновляем локальное состояние
+				} else {
+					console.error('Ошибка при подписке:', response);
+				}
+			}
+		} catch (err) {
+			console.error('Ошибка при выполнении запроса:', err);
+		}
+	};
+
+	// Если данные пользователя еще не загружены, возвращаем null
+	if (!user) return null;
 
 	return (
 		<>
@@ -74,8 +130,10 @@ const Profile = () => {
 									</div>
 								</div>
 							</div>
-							{username !== user.username && (
-								<button className='profileFollowingBtn'>Подписаться</button>
+							{currentUser.username !== user.username && (
+								<button className='profileFollowingBtn' onClick={handleClick}>
+									{followed ? 'Отписаться' : 'Подписаться'}
+								</button>
 							)}
 						</div>
 					</div>
