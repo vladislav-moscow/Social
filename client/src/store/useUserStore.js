@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import axios from 'axios';
 
-
 /**
  * Zustand store для управления состоянием пользователей.
  * Включает действия для получения данных пользователей и их сохранения.
@@ -45,6 +44,26 @@ const useUserStore = create(
 				});
 			}
 		},
+		/*fetchUserById: async (userId) => {
+			const existingUser = get().users[userId];
+			if (existingUser) return;
+
+			set({ isFetching: true, error: false });
+
+			try {
+				const res = await axios.get(`/api/users?userId=${userId}`);
+				set((state) => ({
+					users: { ...state.users, [userId]: res.data },
+					isFetching: false,
+					error: false,
+				}));
+			} catch (err) {
+				set({
+					isFetching: false,
+					error: err.response?.data?.message || 'Ошибка загрузки пользователя',
+				});
+			}
+		},*/
 
 		// Новый метод для получения списка друзей по ID пользователя
 		fetchFriends: async (userId) => {
@@ -79,27 +98,34 @@ const useUserStore = create(
 
 		/**
 		 * Асинхронная функция для получения данных пользователя по имени.
-		 * @param {string} username - Имя пользователя.
+		 * @param {string} username - Имя пользователя, данные которого нужно получить.
 		 */
 		fetchUserByUsername: async (username) => {
-			const existingUser = Object.values(get().users).find(
-				(user) => user.username === username
-			);
-			if (existingUser) return; // Если пользователь уже загружен, выходим.
+			// Получаем текущие данные из состояния стора.
+			const existingUser = get().users[username];
 
+			// Если данные пользователя уже существуют в состоянии, прекращаем выполнение функции.
+			if (existingUser) return;
+
+			// Устанавливаем состояние загрузки и сбрасываем флаг ошибки.
 			set({ isFetching: true, error: false });
 
 			try {
+				// Выполняем асинхронный запрос к API для получения данных пользователя по имени.
 				const res = await axios.get(`/api/users?username=${username}`);
+
+				// Обновляем состояние стора новыми данными пользователя.
+				// Используем spread оператор для копирования существующих данных и добавляем новые данные для указанного имени пользователя.
 				set((state) => ({
-					users: { ...state.users, [res.data._id]: res.data }, // Обновляем состояние с новыми данными пользователя.
-					isFetching: false,
-					error: false,
+					users: { ...state.users, [username]: res.data },
+					isFetching: false, // Устанавливаем флаг завершения загрузки.
+					error: false, // Сбрасываем флаг ошибки.
 				}));
 			} catch (err) {
+				// Если произошла ошибка при запросе, обновляем состояние с сообщением об ошибке.
 				set({
-					isFetching: false,
-					error: err.response?.data?.message || 'Ошибка загрузки пользователя', // Обработка ошибки.
+					isFetching: false, // Устанавливаем флаг завершения загрузки.
+					error: err.response?.data?.message || 'Ошибка загрузки пользователя', // Обработка сообщения об ошибке, если оно доступно.
 				});
 			}
 		},
@@ -110,6 +136,7 @@ const useUserStore = create(
 		 * @returns {Object|null} - Данные пользователя или null, если пользователь не найден в состоянии.
 		 */
 		getUserById: (userId) => get().users[userId], // Возвращаем данные пользователя, если они уже есть в состоянии.
+		getUserByUsername: (username) => get().users[username], // Возвращаем данные пользователя, если они уже есть в состоянии.
 
 		/**
 		 * Универсальный метод для получения пользователя по ID или имени.
@@ -137,7 +164,7 @@ const useUserStore = create(
 		 * Очистка всех данных пользователей.
 		 * Удаляет всех пользователей из состояния, сбрасывая состояние users.
 		 */
-		clearUsers: () => set({ users: {} }), // Полностью очищаем объект users, удаляя всех пользователей.
+		clearUsers: () => set({ users: {} }), // Очистка всех данных пользователей.
 	}))
 );
 
