@@ -72,17 +72,21 @@ const Post = ({ post }) => {
 								alt={postUser.username} // Альтернативный текст для изображения.
 							/>
 						</Link>
-
-						<span className='postUsername'>{postUser.username}</span> {/* Отображаем имя пользователя. */}
-						<span className='postDate'>{formattedDate}</span> {/* Отображаем дату создания поста в формате "time ago". */}
+						<span className='postUsername'>{postUser.username}</span>{' '}
+						{/* Отображаем имя пользователя. */}
+						<span className='postDate'>{formattedDate}</span>{' '}
+						{/* Отображаем дату создания поста в формате "time ago". */}
 					</div>
 					<div className='postTopRight'>
-						<MoreVert /> {/* Иконка меню с дополнительными опциями для поста. */}
+						<MoreVert />{' '}
+						{/* Иконка меню с дополнительными опциями для поста. */}
 					</div>
 				</div>
 				<div className='postCenter'>
-					<span className='postText'>{post?.desc}</span> {/* Отображаем текст поста, если он есть. */}
-					<img className='postImg' src={PF + post?.img} alt='ImgPost' /> {/* Отображаем изображение поста, если оно есть. */}
+					<span className='postText'>{post?.desc}</span>{' '}
+					{/* Отображаем текст поста, если он есть. */}
+					<img className='postImg' src={PF + post?.img} alt='ImgPost' />{' '}
+					{/* Отображаем изображение поста, если оно есть. */}
 				</div>
 				<div className='postBottom'>
 					<div className='postBottomLeft'>
@@ -93,11 +97,13 @@ const Post = ({ post }) => {
 							alt='' // Альтернативный текст для изображения.
 						/>
 						<span className='postLikeCounter'>
-							{likeState.likeCount} нравится {/* Отображаем количество лайков. */}
+							{likeState.likeCount} нравится{' '}
+							{/* Отображаем количество лайков. */}
 						</span>
 					</div>
 					<div className='postBottomRight'>
-						<span className='postCommentText'>{post.comment} комментария</span> {/* Отображаем количество комментариев. */}
+						<span className='postCommentText'>{post.comment} комментария</span>{' '}
+						{/* Отображаем количество комментариев. */}
 					</div>
 				</div>
 			</div>
