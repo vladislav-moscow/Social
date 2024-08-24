@@ -124,30 +124,48 @@ const useAuthStore = create(
 		/**
 		 * Добавление пользователя в список подписок (follow).
 		 * @param {string} userId - ID пользователя, на которого подписываются.
+		 * @returns {Object} Обновленное состояние пользователя с добавленным пользователем в список подписок.
 		 */
 		follow: (userId) =>
-			set((state) => ({
-				// Добавляем userId к списку подписок текущего пользователя.
-				user: {
+			set((state) => {
+				if (!state.user) return state; // Если нет текущего пользователя, возвращаем текущее состояние.
+
+				// Создаем новый объект пользователя с добавленным ID в список подписок.
+				const updatedUser = {
 					...state.user,
 					followings: [...state.user.followings, userId],
-				},
-			})),
+				};
+
+				// Сохраняем обновленные данные пользователя в localStorage.
+				localStorage.setItem('user', JSON.stringify(updatedUser));
+
+				// Возвращаем новое состояние с обновленным пользователем.
+				return { user: updatedUser };
+			}),
 
 		/**
 		 * Удаление пользователя из списка подписок (unfollow).
 		 * @param {string} userId - ID пользователя, от которого отписываются.
+		 * @returns {Object} Обновленное состояние пользователя с удаленным пользователем из списка подписок.
 		 */
 		unfollow: (userId) =>
-			set((state) => ({
-				// Удаляем userId из списка подписок текущего пользователя.
-				user: {
+			set((state) => {
+				if (!state.user) return state; // Если нет текущего пользователя, возвращаем текущее состояние.
+
+				// Создаем новый объект пользователя с удаленным ID из списка подписок.
+				const updatedUser = {
 					...state.user,
 					followings: state.user.followings.filter(
 						(following) => following !== userId
 					),
-				},
-			})),
+				};
+
+				// Сохраняем обновленные данные пользователя в localStorage.
+				localStorage.setItem('user', JSON.stringify(updatedUser));
+
+				// Возвращаем новое состояние с обновленным пользователем.
+				return { user: updatedUser };
+			}),
 	}))
 );
 
