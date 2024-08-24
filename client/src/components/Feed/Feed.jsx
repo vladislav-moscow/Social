@@ -17,10 +17,13 @@ const Feed = ({ username }) => {
 		}
 	}, [username, user, fetchPosts]);
 
+	// Отображаем компонент Share, если мы на странице профиля текущего пользователя или всегда
+	const showShareComponent = username === user.username || !username;
+
 	return (
 		<div className='feed'>
 			<div className='feedWrapper'>
-				<Share />
+				{showShareComponent && <Share />}
 				{posts.map((post) => (
 					<Post key={post._id} post={post} />
 				))}
