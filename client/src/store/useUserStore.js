@@ -2,10 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import axios from 'axios';
 
-/**
- * Zustand store для управления состоянием пользователей.
- * Включает действия для получения данных пользователей и их сохранения.
- */
+
 /**
  * Zustand store для управления состоянием пользователей.
  * Включает действия для получения данных пользователей и их сохранения.
@@ -59,7 +56,7 @@ const useUserStore = create(
 
 				set((state) => {
 					const updatedUsers = { ...state.users };
-					
+
 					// Сохраняем каждого друга в состоянии, добавляя его данные в объект users.
 					res.data.forEach((friend) => {
 						updatedUsers[friend._id] = friend;
@@ -81,11 +78,60 @@ const useUserStore = create(
 		},
 
 		/**
+		 * Асинхронная функция для получения данных пользователя по имени.
+		 * @param {string} username - Имя пользователя.
+		 */
+		fetchUserByUsername: async (username) => {
+			const existingUser = Object.values(get().users).find(
+				(user) => user.username === username
+			);
+			if (existingUser) return; // Если пользователь уже загружен, выходим.
+
+			set({ isFetching: true, error: false });
+
+			try {
+				const res = await axios.get(`/api/users?username=${username}`);
+				set((state) => ({
+					users: { ...state.users, [res.data._id]: res.data }, // Обновляем состояние с новыми данными пользователя.
+					isFetching: false,
+					error: false,
+				}));
+			} catch (err) {
+				set({
+					isFetching: false,
+					error: err.response?.data?.message || 'Ошибка загрузки пользователя', // Обработка ошибки.
+				});
+			}
+		},
+
+		/**
 		 * Метод для получения пользователя из состояния по его ID.
 		 * @param {string} userId - ID пользователя.
 		 * @returns {Object|null} - Данные пользователя или null, если пользователь не найден в состоянии.
 		 */
 		getUserById: (userId) => get().users[userId], // Возвращаем данные пользователя, если они уже есть в состоянии.
+
+		/**
+		 * Универсальный метод для получения пользователя по ID или имени.
+		 * @param {string} identifier - ID или имя пользователя.
+		 * @returns {Object|null} - Данные пользователя или null, если пользователь не найден.
+		 */
+		/*getUser: async (identifier) => {
+			let user = get().users[identifier];
+
+			if (!user) {
+				if (identifier.includes('@')) {
+					// Предполагаем, что это имя пользователя
+					await get().fetchUserByUsername(identifier);
+				} else {
+					// Предполагаем, что это ID
+					await get().fetchUserById(identifier);
+				}
+				user = get().users[identifier];
+			}
+
+			return user || null; // Возвращаем пользователя, если найден, иначе null.
+		},*/
 
 		/**
 		 * Очистка всех данных пользователей.
