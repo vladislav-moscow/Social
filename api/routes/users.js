@@ -75,6 +75,35 @@ router.get('/', async (req, res) => {
 	}
 });
 
+// Получение списка друзей пользователя по его ID
+router.get("/friends/:userId", async (req, res) => {
+  try {
+    // Находим пользователя в базе данных по его ID, полученному из параметров запроса
+    const user = await User.findById(req.params.userId);
+
+    // Получаем данные о друзьях пользователя, используя Promise.all для параллельного выполнения запросов
+    const friends = await Promise.all(
+      user.followings.map((friendId) => {
+        // Для каждого ID друга выполняем запрос к базе данных для получения информации о друге
+        return User.findById(friendId);
+      })
+    );
+
+    // Формируем список друзей, включая только необходимые поля: _id, username и profilePicture
+    let friendList = [];
+    friends.map((friend) => {
+      const { _id, username, profilePicture } = friend;
+      friendList.push({ _id, username, profilePicture });
+    });
+
+    // Возвращаем список друзей в формате JSON с кодом состояния 200 (OK)
+    res.status(200).json(friendList);
+  } catch (err) {
+    // В случае ошибки возвращаем сообщение об ошибке с кодом состояния 500 (Internal Server Error)
+    res.status(500).json(err);
+  }
+});
+
 // Подписка на пользователя
 router.put('/:id/follow', async (req, res) => {
 	// Проверяем, что пользователь не пытается подписаться на самого себя
