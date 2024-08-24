@@ -49,6 +49,37 @@ const useUserStore = create(
 			}
 		},
 
+		// Новый метод для получения списка друзей по ID пользователя
+		fetchFriends: async (userId) => {
+			set({ isFetching: true, error: false }); // Устанавливаем флаг загрузки.
+
+			try {
+				// Запрашиваем список друзей с сервера.
+				const res = await axios.get(`/api/users/friends/${userId}`);
+
+				set((state) => {
+					const updatedUsers = { ...state.users };
+					
+					// Сохраняем каждого друга в состоянии, добавляя его данные в объект users.
+					res.data.forEach((friend) => {
+						updatedUsers[friend._id] = friend;
+					});
+
+					return {
+						users: updatedUsers, // Обновляем состояние с данными всех друзей.
+						isFetching: false, // Сбрасываем флаг загрузки.
+						error: false, // Сбрасываем ошибку.
+					};
+				});
+			} catch (err) {
+				// В случае ошибки, устанавливаем флаг ошибки и сохраняем сообщение об ошибке.
+				set({
+					isFetching: false,
+					error: err.response?.data?.message || 'Ошибка загрузки списка друзей',
+				});
+			}
+		},
+
 		/**
 		 * Метод для получения пользователя из состояния по его ID.
 		 * @param {string} userId - ID пользователя.
