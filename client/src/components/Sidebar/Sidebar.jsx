@@ -74,8 +74,8 @@ const Sidebar = () => {
 				<h2 className='sidebarMyFriend'>Мои друзья:</h2>
 				<ul className='sidebarFriendList'>
 					{/* Проверяем, есть ли друзья у пользователя */}
-					{user.followers && user.followers.length > 0 ? (
-						user.followers.map((friendId) => (
+					{user.followings && user.followings.length > 0 ? (
+						user.followings.map((friendId) => (
 							<Friend key={friendId} friendId={friendId} />
 						))
 					) : (

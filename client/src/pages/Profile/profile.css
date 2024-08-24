@@ -30,6 +30,12 @@
 	border: 3px solid white;
 }
 
+.profileInfoWrapper {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
 .profileInfo {
 	margin-left: 26%;
 	display: flex;
@@ -57,7 +63,7 @@
 .profileInfoCityWrapper {
 	display: flex;
 	align-items: center;
-	gap:5px;
+	gap: 5px;
 }
 
 .profileInfoKey {
@@ -66,6 +72,10 @@
 
 .profileInfoValue {
 	font-size: 16px;
+}
+
+.profileFollowingBtn {
+	margin-right: 13%;
 }
 
 .profileRightBottom {

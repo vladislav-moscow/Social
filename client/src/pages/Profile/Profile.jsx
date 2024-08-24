@@ -4,7 +4,7 @@ import Rightbar from '../../components/Rightbar/Rightbar';
 import Feed from '../../components/Feed/Feed';
 import PlaceIcon from '@mui/icons-material/Place';
 import FmdBadOutlinedIcon from '@mui/icons-material/FmdBadOutlined';
-import { useParams } from "react-router";
+import { useParams } from 'react-router';
 import './profile.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -22,6 +22,10 @@ const Profile = () => {
 		fetchUser();
 	}, [username]);
 
+
+	// Если пользователь не найден или данные еще загружаются, можно вернуть загрузочный индикатор или ничего не отображать
+	if (!user) return null; // Можно заменить на индикатор загрузки
+
 	return (
 		<>
 			<Topbar />
@@ -30,7 +34,15 @@ const Profile = () => {
 				<div className='profileRight'>
 					<div className='profilrRightTop'>
 						<div className='profileCover'>
-							<img className='profileCoverImg' src={user.coverPicture ? PF + user.coverPicture : PF + 'post/bg_default.jpg'} alt='ProfileBg' />
+							<img
+								className='profileCoverImg'
+								src={
+									user.coverPicture
+										? PF + user.coverPicture
+										: PF + 'post/bg_default.jpg'
+								}
+								alt='ProfileBg'
+							/>
 							<img
 								className='profileUserImg'
 								src={
@@ -41,25 +53,34 @@ const Profile = () => {
 								alt='ProfileAvatar'
 							/>
 						</div>
-						<div className='profileInfo'>
-							<h4 className='profileInfoName'>{user.username}</h4>
-							<span className='profileInfoDesc'>
-								{user.desc}
-							</span>
-							<div className='profileInfoItem'>
-								<div className='profileInfoCityWrapper'>
-									<span className='profileInfoKey'><PlaceIcon/></span>
-									<span className='profileInfoValue'>{user.city ? user.city : 'нет данных'}</span>
-								</div>
-								<div className='profileInfoCityWrapper cursor'>
-									<span className='profileInfoKey'><FmdBadOutlinedIcon/></span>
-									<span className='profileInfoValue'>Подробнее</span>
+						<div className='profileInfoWrapper'>
+							<div className='profileInfo'>
+								<h4 className='profileInfoName'>{user.username}</h4>
+								<span className='profileInfoDesc'>{user.desc}</span>
+								<div className='profileInfoItem'>
+									<div className='profileInfoCityWrapper'>
+										<span className='profileInfoKey'>
+											<PlaceIcon />
+										</span>
+										<span className='profileInfoValue'>
+											{user.city ? user.city : 'нет данных'}
+										</span>
+									</div>
+									<div className='profileInfoCityWrapper cursor'>
+										<span className='profileInfoKey'>
+											<FmdBadOutlinedIcon />
+										</span>
+										<span className='profileInfoValue'>Подробнее</span>
+									</div>
 								</div>
 							</div>
+							{username !== user.username && (
+								<button className='profileFollowingBtn'>Подписаться</button>
+							)}
 						</div>
 					</div>
 					<div className='profileRightBottom'>
-						<Feed username ={username}/>
+						<Feed username={username} />
 						<Rightbar user={user} />
 					</div>
 				</div>
