@@ -73,6 +73,28 @@ const usePostStore = create(
 		},
 
 		/**
+		 * Асинхронная функция для удаления поста.
+		 * @param {string} postId - ID поста, который необходимо удалить.
+		 * @param {string} userId - ID пользователя  который хочет удалить.
+		 */
+		deletePost: async (postId, userId) => {
+			try {
+				// Отправляем запрос на сервер для удаления поста
+				const res = await axios.delete(`/api/posts/${postId}`, { data: { userId } });
+				if (res.status === 200) {
+					// Если удаление прошло успешно, обновляем состояние
+					set((state) => {
+						const updatedPosts = state.posts.filter((post) => post._id !== postId);
+						localStorage.setItem('posts', JSON.stringify(updatedPosts));
+						return { posts: updatedPosts };
+					});
+				}
+			} catch (error) {
+				console.error('Ошибка при удалении поста:', error);
+			}
+		},
+
+		/**
 		 * Очистка состояния постов.
 		 * Удаляет посты из localStorage и сбрасывает состояние стора.
 		 */
