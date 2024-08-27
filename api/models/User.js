@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-//создаем новую таблицу пользователей
 const UserSchema = new mongoose.Schema(
 	{
 		username: {

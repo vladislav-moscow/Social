@@ -3,8 +3,6 @@ import './rightbar.css';
 //import Online from '../Online/Online';
 
 const Rightbar = ({ user }) => {
-	// Получаем список пользователей из Zustand Store
-	//const users = useUserStore((state) => state.users);
 
 	const HomeRightbar = () => {
 		return (
