@@ -9,6 +9,8 @@ import path from 'path';
 import userRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import postsRoute from './routes/posts.js';
+import conversationRoute from './routes/conversations.js';
+import messageRoute from './routes/messages.js';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -30,7 +32,7 @@ const connect = async () => {
 	}
 };
 
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 // Middleware
 app.use(express.json());
@@ -38,27 +40,29 @@ app.use(helmet());
 app.use(morgan('common'));
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
+	destination: (req, file, cb) => {
+		cb(null, 'public/images');
+	},
+	filename: (req, file, cb) => {
+		cb(null, req.body.name);
+	},
 });
 
 const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  try {
-    return res.status(200).json("File uploded successfully");
-  } catch (error) {
-    console.error(error);
-  }
+app.post('/api/upload', upload.single('file'), (req, res) => {
+	try {
+		return res.status(200).json('File uploded successfully');
+	} catch (error) {
+		console.error(error);
+	}
 });
 
 // Роуты
 app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/posts', postsRoute);
+app.use('/api/conversations', conversationRoute);
+app.use('/api/messages', messageRoute);
 
 app.listen(6600, () => {
 	connect();
