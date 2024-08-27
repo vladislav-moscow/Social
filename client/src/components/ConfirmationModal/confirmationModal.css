@@ -1,0 +1,38 @@
+.confirmationModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmationModalContent {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.confirmationModalContent button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirmationModalContent button:first-of-type {
+  background: #f44336;
+  color: #fff;
+}
+
+.confirmationModalContent button:last-of-type {
+  background: #9e9e9e;
+  color: #fff;
+}
