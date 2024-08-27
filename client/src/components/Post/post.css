@@ -1,78 +1,110 @@
 .post {
-  width: 100%;
-  border-radius: 10px;
-  -webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
-  box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
-  margin: 30px 0;
+	width: 100%;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	margin: 30px 0;
+	position: relative;
 }
 
 .postWrapper {
-  padding: 10px;
+	padding: 10px;
 }
 
 .postTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.postTopRight {
+	cursor: pointer;
 }
 
 .postTopLeft {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .postProfileImg {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
 }
 
 .postUsername {
-  font-size: 15px;
-  font-weight: 500;
-  margin: 0 10px;
+	font-size: 15px;
+	font-weight: 500;
+	margin: 0 10px;
 }
 
-.postDate{
-    font-size: 12px;
+.postDate {
+	font-size: 12px;
 }
 
-.postCenter{
-    margin: 20px 0;
+.postCenter {
+	margin: 20px 0;
 }
 
-.postImg{
-    margin-top: 20px;
-    width: 100%;
-    max-height: 500px;
-    object-fit: cover;
+.postImg {
+	margin-top: 20px;
+	width: 100%;
+	max-height: 500px;
+	object-fit: cover;
 }
 
-.postBottom{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.postBottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
-.postBottomLeft{
-    display: flex;
-    align-items: center;   
+.postBottomLeft {
+	display: flex;
+	align-items: center;
 }
 
-.likeIcon{
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
-    cursor: pointer;
+.likeIcon {
+	width: 24px;
+	height: 24px;
+	margin-right: 5px;
+	cursor: pointer;
 }
 
-.postLikeCounter{
-    font-size: 15px;
+.postLikeCounter {
+	font-size: 15px;
 }
 
-.postCommentText{
-    cursor: pointer;
-    border-bottom: 1px dashed gray;
-    font-size: 15px;
+.postCommentText {
+	cursor: pointer;
+	border-bottom: 1px dashed gray;
+	font-size: 15px;
+}
+
+.postOptionsMenu {
+	position: absolute;
+	top: 45px;
+	right: 20px;
+	background-color: white;
+	border: 1px solid #ccc;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	overflow: hidden;
+	z-index: 1000;
+}
+
+.postOptionsMenu button {
+	display: block;
+	width: 100%;
+	padding: 8px 16px;
+	border: none;
+	background-color: white;
+	text-align: left;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.postOptionsMenu button:hover {
+	background-color: #f5f5f5;
 }

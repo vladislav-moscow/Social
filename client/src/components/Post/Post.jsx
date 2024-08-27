@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MoreVert } from '@mui/icons-material';
 import './post.css';
@@ -7,6 +7,7 @@ import ru from 'timeago.js/lib/lang/ru';
 import useAuthStore from '../../store/useAuthStore';
 import usePostStore from '../../store/usePostStore';
 import useUserStore from '../../store/useUserStore';
+import ConfirmationModal from '../ConfirmationModal/ConfirmationModal';
 
 // Регистрируем русскую локализацию для timeago.js, чтобы отображать дату и время в русском формате.
 register('ru', ru);
@@ -26,14 +27,16 @@ register('ru', ru);
 const Post = ({ post }) => {
 	// Получаем данные текущего пользователя из Zustand store.
 	const user = useAuthStore((state) => state.user);
-
 	// Получаем функции для работы с постами и пользователями из Zustand store.
 	const fetchPostUser = usePostStore((state) => state.fetchPostUser); // Функция для загрузки данных пользователя, создавшего пост.
 	const getUserById = useUserStore((state) => state.getUserById); // Функция для получения данных пользователя по его ID.
 	const toggleLike = usePostStore((state) => state.toggleLike); // Функция для обработки лайков.
-
+	const deletePost = usePostStore((state) => state.deletePost); // Функция удаление поста
 	// Получаем путь к публичной папке из окружения для формирования полного пути к изображениям.
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+	const [menuVisible, setMenuVisible] = useState(false); // состояние для меню
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const menuRef = useRef();
 
 	/**
 	 * Инициализируем состояние для лайков.
@@ -52,6 +55,30 @@ const Post = ({ post }) => {
 	useEffect(() => {
 		fetchPostUser(post.userId);
 	}, [post.userId, fetchPostUser]);
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (menuRef.current && !menuRef.current.contains(event.target)) {
+				setMenuVisible(false);
+			}
+		};
+
+		const disableScroll = () => {
+			if (isModalOpen) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = '';
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		disableScroll();
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+			document.body.style.overflow = '';
+		};
+	}, [menuVisible, isModalOpen]);
 
 	// Получаем данные пользователя, создавшего пост, из Zustand store.
 	const postUser = getUserById(post.userId);
@@ -77,6 +104,23 @@ const Post = ({ post }) => {
 		}));
 	};
 
+	const handleMenuToggle = () => {
+		setMenuVisible((prev) => !prev);
+	};
+
+	const handleDelete = () => {
+		setIsModalOpen(true);
+	};
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
+
+	const confirmDelete = () => {
+		deletePost(post._id, user._id);
+		closeModal();
+	};
+
 	return (
 		<div className='post'>
 			<div className='postWrapper'>
@@ -98,9 +142,14 @@ const Post = ({ post }) => {
 						<span className='postDate'>{formattedDate}</span>{' '}
 						{/* Отображаем дату создания поста в формате "time ago". */}
 					</div>
-					<div className='postTopRight'>
-						<MoreVert />{' '}
-						{/* Иконка меню с дополнительными опциями для поста. */}
+					<div className='postTopRight' ref={menuRef}>
+						<MoreVert onClick={handleMenuToggle} />
+						{menuVisible && post.userId === user._id && (
+							<div className='postOptionsMenu'>
+								<button onClick={handleDelete}>Удалить</button>
+								<button>Редактировать</button>
+							</div>
+						)}
 					</div>
 				</div>
 				<div className='postCenter'>
@@ -128,6 +177,13 @@ const Post = ({ post }) => {
 					</div>
 				</div>
 			</div>
+			{isModalOpen && (
+				<ConfirmationModal
+					message='Вы уверены, что хотите удалить этот пост?'
+					onConfirm={confirmDelete}
+					onClose={closeModal}
+				/>
+			)}
 		</div>
 	);
 };
