@@ -44,26 +44,6 @@ const useUserStore = create(
 				});
 			}
 		},
-		/*fetchUserById: async (userId) => {
-			const existingUser = get().users[userId];
-			if (existingUser) return;
-
-			set({ isFetching: true, error: false });
-
-			try {
-				const res = await axios.get(`/api/users?userId=${userId}`);
-				set((state) => ({
-					users: { ...state.users, [userId]: res.data },
-					isFetching: false,
-					error: false,
-				}));
-			} catch (err) {
-				set({
-					isFetching: false,
-					error: err.response?.data?.message || 'Ошибка загрузки пользователя',
-				});
-			}
-		},*/
 
 		// Новый метод для получения списка друзей по ID пользователя
 		fetchFriends: async (userId) => {
@@ -137,28 +117,6 @@ const useUserStore = create(
 		 */
 		getUserById: (userId) => get().users[userId], // Возвращаем данные пользователя, если они уже есть в состоянии.
 		getUserByUsername: (username) => get().users[username], // Возвращаем данные пользователя, если они уже есть в состоянии.
-
-		/**
-		 * Универсальный метод для получения пользователя по ID или имени.
-		 * @param {string} identifier - ID или имя пользователя.
-		 * @returns {Object|null} - Данные пользователя или null, если пользователь не найден.
-		 */
-		/*getUser: async (identifier) => {
-			let user = get().users[identifier];
-
-			if (!user) {
-				if (identifier.includes('@')) {
-					// Предполагаем, что это имя пользователя
-					await get().fetchUserByUsername(identifier);
-				} else {
-					// Предполагаем, что это ID
-					await get().fetchUserById(identifier);
-				}
-				user = get().users[identifier];
-			}
-
-			return user || null; // Возвращаем пользователя, если найден, иначе null.
-		},*/
 
 		/**
 		 * Очистка всех данных пользователей.
