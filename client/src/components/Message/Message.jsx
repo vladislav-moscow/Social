@@ -1,7 +1,15 @@
+import { format, register } from 'timeago.js';
+import ru from 'timeago.js/lib/lang/ru';
 import "./message.css";
 
-const Message = ({own}) => {
+// Регистрируем русскую локализацию для timeago.js, чтобы отображать дату и время в русском формате.
+register('ru', ru);
+
+const Message = ({ message, own}) => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+
+	// Форматируем дату создания поста с использованием timeago.js и русской локализации.
+	const formattedDate = format(message.createdAt, 'ru');
 
 	return (
 		<div className={own? "message own" : "message"}>
@@ -11,9 +19,9 @@ const Message = ({own}) => {
           src={PF + 'person/1.jpg'}
           alt=""
         />
-        <p className="messageText">Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus quasi dicta ipsa ut nobis nulla, veritatis quam ea accusamus quod at. Quam, cupiditate! Quibusdam officia maiores quisquam rerum quas dolorum odio nihil necessitatibus labore impedit quia aperiam numquam libero doloribus, neque veniam incidunt! Et neque obcaecati nihil, impedit repellat commodi!</p>
+        <p className="messageText">{message.text}</p>
       </div>
-      <div className="messageBottom">1 час назад</div>
+      <div className="messageBottom">{formattedDate}</div>
     </div>
   );
 }
