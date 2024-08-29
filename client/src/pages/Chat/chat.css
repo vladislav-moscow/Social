@@ -76,6 +76,32 @@
 	color: rgb(224, 220, 220);
 	cursor: default;
 }
+.chatImgPreview {
+	position: relative;
+	width: 100%;
+	padding: 10px 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.chatImgContainer {
+	padding: 0 20px 10px 20px;
+	position: relative;
+}
+
+.chatImg {
+	width: 100%;
+	object-fit: cover;
+}
+
+.chatCancelImg {
+	position: absolute;
+	top: 0;
+	right: 20px;
+	cursor: pointer;
+	opacity: 0.7;
+}
 
 @media screen and (max-width: 768px) {
 	.chatMenu {
