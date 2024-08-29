@@ -2,31 +2,46 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 const useConversationStore = create((set) => ({
-  conversations: [],
-  fetchConversations: async (userId) => {
-    // Попытка загрузки бесед из локального хранилища
-    const savedConversations = localStorage.getItem(`conversations_${userId}`);
-    
-    if (savedConversations) {
-      // Если данные найдены, обновляем состояние
-      set({ conversations: JSON.parse(savedConversations) });
-    } else {
-      // Если данных нет, выполняем запрос на сервер
-      try {
-        const res = await axios.get(`/api/conversations/${userId}`);
-        set({ conversations: res.data });
-        // Сохраняем данные в локальное хранилище
-        localStorage.setItem(`conversations_${userId}`, JSON.stringify(res.data));
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  },
-  clearConversations: (userId) => {
-    // Очистка состояния и локального хранилища
-    set({ conversations: [] });
-    localStorage.removeItem(`conversations_${userId}`);
-  }
+	conversations: [],
+	currentChat: null,
+
+	// Получение бесед с сохранением в локальном хранилище
+	fetchConversations: async (userId) => {
+		const savedConversations = localStorage.getItem(`conversations`);
+
+		if (savedConversations) {
+			set({ conversations: JSON.parse(savedConversations) });
+		} else {
+			try {
+				const res = await axios.get(`/api/conversations/${userId}`);
+				set({ conversations: res.data });
+				localStorage.setItem(
+					`conversations`,
+					JSON.stringify(res.data)
+				);
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	},
+
+	// Сохранение выбранной беседы в локальное хранилище
+	saveCurrentChat: (userId, chat) => {
+		set({ currentChat: chat });
+		localStorage.setItem(`currentChat`, chat._id);
+	},
+
+	// Загрузка выбранной беседы из локального хранилища
+	loadCurrentChat: (userId) => {
+		const savedChatId = localStorage.getItem(`currentChat`);
+		return savedChatId || null;
+	},
+
+	clearConversations: (userId) => {
+		set({ conversations: [], currentChat: null });
+		localStorage.removeItem(`conversations`);
+		localStorage.removeItem(`currentChat`);
+	},
 }));
 
 export default useConversationStore;
