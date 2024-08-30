@@ -5,7 +5,7 @@ import Conversation from '../../components/Conversations/Conversation';
 import useAuthStore from '../../store/useAuthStore';
 import Message from '../../components/Message/Message';
 import ChatOnline from '../../components/ChatOnline/ChatOnline';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useConversationStore from '../../store/useConversationStore';
 import useMessageStore from '../../store/useMessageStore';
 import { Cancel, PermMedia } from '@mui/icons-material';
@@ -23,6 +23,7 @@ const Chat = () => {
 	const [currentChat, setCurrentChat] = useState(null);
 	const [newMessage, setNewMessage] = useState('');
 	const [file, setFile] = useState(null);
+	const scrollRef = useRef();
 
 	// Загрузка бесед при монтировании компонента
 	useEffect(() => {
@@ -40,6 +41,10 @@ const Chat = () => {
 			}
 		}
 	}, [conversations, user._id, fetchMessages, loadCurrentChat]);
+
+	useEffect(() => {
+		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messages]);
 
 	// Обработчик выбора беседы
 	const handleChatSelect = (chat) => {
@@ -95,25 +100,25 @@ const Chat = () => {
 							<>
 								<div className='chatBoxTop'>
 									{messages[currentChat._id]?.map((m) => (
-										<div key={m._id}>
+										<div key={m._id} ref={scrollRef}>
 											<Message message={m} own={m.sender === user._id} />
 										</div>
 									))}
 								</div>
-								<div className='chatBoxBottom'>
 								{file && (
-										<div className='chatImgPreview'>
-											<img
-												className='chatImg'
-												src={URL.createObjectURL(file)}
-												alt=''
-											/>
-											<Cancel
-												className='chatCancelImg'
-												onClick={() => setFile(null)}
-											/>
-										</div>
-									)}
+									<div className='chatImgPreview'>
+										<img
+											className='chatImg'
+											src={URL.createObjectURL(file)}
+											alt=''
+										/>
+										<Cancel
+											className='chatCancelImg'
+											onClick={() => setFile(null)}
+										/>
+									</div>
+								)}
+								<div className='chatBoxBottom'>
 									<textarea
 										className='chatMessageInput'
 										placeholder='напишите сообщение...'
