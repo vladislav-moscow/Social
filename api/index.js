@@ -9,6 +9,8 @@ import path from 'path';
 import userRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import postsRoute from './routes/posts.js';
+import jobsRoute from './routes/jobs.js';
+import coursesRoute from './routes/courses.js';
 import conversationRoute from './routes/conversations.js';
 import messageRoute from './routes/messages.js';
 import { fileURLToPath } from 'url';
@@ -63,6 +65,8 @@ app.use('/api/auth', authRoute);
 app.use('/api/posts', postsRoute);
 app.use('/api/conversations', conversationRoute);
 app.use('/api/messages', messageRoute);
+app.use('/api/jobs', jobsRoute);
+app.use('/api/course', coursesRoute);
 
 app.listen(6600, () => {
 	connect();
