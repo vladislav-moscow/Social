@@ -39,12 +39,25 @@ const useMessageStore = create((set) => ({
 		}
 	},
 
+	// Новый метод для обновления сообщений через WebSocket
+	updateMessages: (conversationId, message) => {
+		set((state) => ({
+			messages: {
+				...state.messages,
+				[conversationId]: [...(state.messages[conversationId] || []), message],
+			},
+		}));
+	},
+
 	// Метод для очистки сообщений (удаления сообщений для определенной беседы)
 	clearMessages: (conversationId) => {
 		set((state) => {
-			const newMessages = { ...state.messages }; // Копируем текущее состояние сообщений
-			delete newMessages[conversationId]; // Удаляем сообщения для заданной беседы
-			return { messages: newMessages }; // Возвращаем обновленное состояние
+			// Копируем текущее состояние сообщений
+			const newMessages = { ...state.messages };
+			// Удаляем сообщения для заданной беседы
+			delete newMessages[conversationId];
+			// Возвращаем обновленное состояние
+			return { messages: newMessages };
 		});
 	},
 }));
