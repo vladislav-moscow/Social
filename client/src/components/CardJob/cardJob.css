@@ -1,0 +1,74 @@
+.card {
+	width: 100%;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	margin: 30px 0;
+	position: relative;
+}
+.cardWrapper {
+	padding: 10px;
+}
+
+.cardJobTop {
+	display: flex;
+	flex-direction: column;
+}
+
+.cardJobTopLeft {
+	display: flex;
+	align-items: center;
+}
+
+.cardJobImage {
+	margin-top: 20px;
+	width: 100%;
+	max-height: 500px;
+	object-fit: cover;
+}
+
+.cardJobTitle {
+	font-size: 45px;
+	font-weight: 500;
+	margin-top: 15px;
+}
+
+.cardJobDate {
+	font-size: 16px;
+	color: gray;
+	display: flex;
+	justify-content: flex-end;
+	display: flex;
+	justify-content: flex-end;
+	margin-right: 30px;
+	padding-bottom: 10px;
+}
+
+.cardJobDescription {
+	font-size: 16px;
+	color: #666;
+}
+
+.cardJobPhone {
+	font-size: 16px;
+	color: black;
+}
+
+.cardJobSalary {
+	margin-top: 10px;
+	font-size: 16px;
+	font-weight: 500;
+	color: #2e7d32;
+}
+.cardJobPhone span,
+.cardJobSalary span {
+	color: black;
+	font-size: 18;
+	font-weight: 700;
+	margin-left: 10px;
+}
+
+.cardJobCenter,
+.cardJobBottom {
+	margin-top: 10px;
+}
