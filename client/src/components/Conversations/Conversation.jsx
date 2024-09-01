@@ -5,7 +5,7 @@ import useUserStore from '../../store/useUserStore';
 const Conversation = ({ conversation, currentUser }) => {
 	// Извлекаем функции для работы с пользователями из стора
 	const { fetchUser, getUserById } = useUserStore();
-	// Путь к публичной папке с ресурсами, например, изображениями
+	// Путь к публичной папке с ресурсами
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 
 	// Находим ID собеседника (друга) в данной беседе, исключая текущего пользователя
