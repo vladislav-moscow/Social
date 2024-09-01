@@ -10,6 +10,7 @@ import useConversationStore from '../../store/useConversationStore';
 import useMessageStore from '../../store/useMessageStore';
 import { Cancel, PermMedia } from '@mui/icons-material';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 const Chat = () => {
 	const {
@@ -19,11 +20,45 @@ const Chat = () => {
 		loadCurrentChat,
 	} = useConversationStore();
 	const user = useAuthStore((state) => state.getUser());
-	const { messages, fetchMessages, sendMessage } = useMessageStore();
+	const { messages, fetchMessages, sendMessage, updateMessages } =
+		useMessageStore();
 	const [currentChat, setCurrentChat] = useState(null);
 	const [newMessage, setNewMessage] = useState('');
 	const [file, setFile] = useState(null);
+	const [arrivalMessage, setArrivalMessage] = useState(null);
+	const [onlineUsers, setOnlineUsers] = useState([]);
+	const socket = useRef();
 	const scrollRef = useRef();
+
+	useEffect(() => {
+		socket.current = io('ws://localhost:8900');
+		socket.current.on('getMessage', (data) => {
+			setArrivalMessage({
+				sender: data.senderId,
+				text: data.text,
+				createdAt: Date.now(),
+			});
+		});
+	}, []);
+
+	// Обновление сообщений при получении нового через WebSocket
+	useEffect(() => {
+		if (
+			arrivalMessage &&
+			currentChat?.members.includes(arrivalMessage.sender)
+		) {
+			updateMessages(currentChat._id, arrivalMessage);
+		}
+	}, [arrivalMessage, currentChat, updateMessages]);
+
+	useEffect(() => {
+		socket.current.emit('addUser', user._id);
+		socket.current.on('getUsers', (users) => {
+			setOnlineUsers(
+				user.followings.filter((f) => users.some((u) => u.userId === f))
+			);
+		});
+	}, [user]);
 
 	// Загрузка бесед при монтировании компонента
 	useEffect(() => {
@@ -60,6 +95,7 @@ const Chat = () => {
 			text: newMessage,
 			conversationId: currentChat._id,
 		};
+
 		if (file) {
 			const data = new FormData();
 			const fileName = Date.now() + file.name;
@@ -72,6 +108,17 @@ const Chat = () => {
 			} catch (err) {}
 		}
 		await sendMessage(message);
+
+		// Отправка сообщения через WebSocket
+		const receiverId = currentChat.members.find(
+			(member) => member !== user._id
+		);
+		socket.current.emit('sendMessage', {
+			senderId: user._id,
+			receiverId,
+			text: newMessage,
+		});
+
 		setNewMessage('');
 		setFile(null);
 	};
@@ -150,12 +197,11 @@ const Chat = () => {
 				</div>
 				<div className='chatOnline'>
 					<div className='chatOnlineWrapper'>
-						<ChatOnline />
-						<ChatOnline />
-						<ChatOnline />
-						<ChatOnline />
-						<ChatOnline />
-						<ChatOnline />
+						<ChatOnline
+							onlineUsers={onlineUsers}
+							currentId={user._id}
+							setCurrentChat={setCurrentChat}
+						/>
 					</div>
 				</div>
 			</div>
