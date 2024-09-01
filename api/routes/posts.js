@@ -49,7 +49,7 @@ router.delete('/:id', async (req, res) => {
 		if (post.userId === req.body.userId) {
 			// Удаляем пост из базы данных
 			await post.deleteOne();
-			res.status(200).json('Пост успешно обновлен');
+			res.status(200).json('Пост успешно удален');
 		} else {
 			res.status(403).json('Вы можете удалять только свои посты');
 		}
