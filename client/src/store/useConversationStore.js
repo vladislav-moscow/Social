@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const useConversationStore = create((set) => ({
+const useConversationStore = create((set, get) => ({
 	conversations: [],
 	currentChat: null,
 
@@ -25,26 +25,46 @@ const useConversationStore = create((set) => ({
 	},
 
 	/**
-	 * Создание новой беседы между текущим пользователем и выбранным другом.
-	 * @param {string} userId - ID текущего пользователя
-	 * @param {string} friendId - ID друга
-	 */
+     * Создание новой беседы между текущим пользователем и выбранным другом.
+     * @param {string} userId - ID текущего пользователя
+     * @param {string} friendId - ID друга
+     */
 	createConversation: async (userId, friendId) => {
 		try {
-			const res = await axios.post('/api/conversations', {
-				senderId: userId,
-				receiverId: friendId,
-			});
-			set((state) => ({
-				conversations: [...state.conversations, res.data],
-				currentChat: res.data,
-			}));
-			localStorage.setItem('currentChat', res.data._id);
-			return res.data;
+				const res = await axios.post('/api/conversations', {
+						senderId: userId,
+						receiverId: friendId,
+				});
+				// Получаем текущее состояние бесед
+				const currentConversations = get().conversations;
+				// Обновляем состояние и localStorage
+				set({
+						conversations: [...currentConversations, res.data],
+						currentChat: res.data,
+				});
+				localStorage.setItem('conversations', JSON.stringify([...currentConversations, res.data]));
+				localStorage.setItem('currentChat', res.data._id);
+				return res.data;
 		} catch (err) {
-			console.log(err);
+				console.log(err);
 		}
-	},
+},
+
+/**
+ * Получение беседы между двумя пользователями
+ * @param {string} firstUserId - ID первого пользователя
+ * @param {string} secondUserId - ID второго пользователя
+ * @returns {Object|null} - Возвращает найденную беседу или null
+ */
+getConversation: async (firstUserId, secondUserId) => {
+		try {
+				const res = await axios.get(`/api/conversations/find/${firstUserId}/${secondUserId}`);
+				return res.data || null;
+		} catch (err) {
+				console.log(err);
+				return null;
+		}
+},
 
 	/**
 	 * Сохранение выбранной беседы в локальное хранилище
