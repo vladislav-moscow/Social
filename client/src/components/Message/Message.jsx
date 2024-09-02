@@ -1,12 +1,25 @@
 import { format, register } from 'timeago.js';
 import ru from 'timeago.js/lib/lang/ru';
+import useUserStore from '../../store/useUserStore';
 import './message.css';
 
 // Регистрируем русскую локализацию для timeago.js, чтобы отображать дату и время в русском формате.
 register('ru', ru);
 
-const Message = ({ message, own }) => {
+const Message = ({ message, own, currentUser}) => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
+	// Используем Zustand store для получения и загрузки данных пользователя
+	const { getUserById } = useUserStore((state) => ({
+		getUserById: state.getUserById,
+	}));
+
+	// Получаем ID отправителя
+	const senderId = message.sender; 
+	//console.log(senderId);// Предполагаем, что senderId хранится в сообщении
+
+	// Получаем данные пользователя по ID отправителя
+	const sender = getUserById(senderId);
+	//console.log(sender)
 
 	// Форматируем дату создания поста с использованием timeago.js и русской локализации.
 	const formattedDate = format(message.createdAt, 'ru');
@@ -14,16 +27,27 @@ const Message = ({ message, own }) => {
 	return (
 		<div className={own ? 'message own' : 'message'}>
 			<div className='messageTop'>
-				<img className='messageImg' src={PF + 'person/1.jpg'} alt='' />
+				{own ? <img
+					className='messageImg'
+					src={currentUser?.profilePicture ? PF + currentUser?.profilePicture : PF + 'person/noAvatar.png'}
+					alt=''
+				/>:<img
+					className='messageImg'
+					src={sender?.profilePicture ? PF + sender?.profilePicture : PF + 'person/noAvatar.png'}
+					alt=''
+				/>}
+				
 				<div className='messageContent'>
 					{message.img ? (
 						<div className='messageText textImg'>
 							<img
-									className='messageImgContent'
-									src={PF + message.img} // Путь к изображению
-									alt='Message attachment'
-								/>
-								{message.text && <span className='messageTextInImg'>{message.text}</span>}
+								className='messageImgContent'
+								src={PF + message.img} // Путь к изображению
+								alt='Message attachment'
+							/>
+							{message.text && (
+								<span className='messageTextInImg'>{message.text}</span>
+							)}
 						</div>
 					) : (
 						<div className='messageText'>{message.text}</div>
