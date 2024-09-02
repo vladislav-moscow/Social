@@ -4,11 +4,12 @@ import Rightbar from '../../components/Rightbar/Rightbar';
 import Feed from '../../components/Feed/Feed';
 import PlaceIcon from '@mui/icons-material/Place';
 import FmdBadOutlinedIcon from '@mui/icons-material/FmdBadOutlined';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import './profile.css';
 import { useEffect, useState } from 'react';
 import useUserStore from '../../store/useUserStore';
 import useAuthStore from '../../store/useAuthStore';
+import useConversationStore from '../../store/useConversationStore'; // Импортируем useConversationStore
 import axios from 'axios';
 
 /**
@@ -18,6 +19,7 @@ import axios from 'axios';
 const Profile = () => {
 	// Получаем имя пользователя из параметров маршрута
 	const { username } = useParams();
+	const navigate = useNavigate(); // Для навигации
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER; // Путь к публичной папке для загрузки изображений
 
 	// Получаем текущего пользователя (залогиненного) и функции для подписки/отписки из стора
@@ -29,6 +31,13 @@ const Profile = () => {
 	const user = useUserStore((state) => state.getUserByUsername(username));
 	const fetchUserByUsername = useUserStore(
 		(state) => state.fetchUserByUsername
+	);
+
+	const { createConversation, getConversation } = useConversationStore(
+		(state) => ({
+			createConversation: state.createConversation,
+			getConversation: state.getConversation,
+		})
 	);
 
 	const [followed, setFollowed] = useState(false); // Локальное состояние для отслеживания подписки
@@ -76,6 +85,35 @@ const Profile = () => {
 			}
 		} catch (err) {
 			console.error('Ошибка при выполнении запроса:', err);
+		}
+	};
+
+	// Функция для создания или получения беседы и перехода на страницу чата
+	const handleMessageClick = async () => {
+		if (currentUser._id !== user._id) {
+			try {
+				// Проверяем, существует ли беседа
+				const existingConversation = await getConversation(
+					currentUser._id,
+					user._id
+				);
+				if (existingConversation) {
+					// Сохраняем текущую беседу и переходим на страницу чата
+					useConversationStore.getState().saveCurrentChat(existingConversation);
+					navigate(`/chat`);
+				} else {
+					// Создаем новую беседу и переходим на страницу чата
+					const newConversation = await createConversation(
+						currentUser._id,
+						user._id
+					);
+					if (newConversation) {
+						navigate(`/chat`);
+					}
+				}
+			} catch (err) {
+				console.error('Ошибка при обработке беседы:', err);
+			}
 		}
 	};
 
@@ -131,9 +169,17 @@ const Profile = () => {
 								</div>
 							</div>
 							{currentUser.username !== user.username && (
-								<button className='profileFollowingBtn' onClick={handleClick}>
-									{followed ? 'Отписаться' : 'Подписаться'}
-								</button>
+								<div className='profileBtnWrapper'>
+									<button className='profileFollowingBtn' onClick={handleClick}>
+										{followed ? 'Отписаться' : 'Подписаться'}
+									</button>
+									<button
+										className='profileMessageBtn'
+										onClick={handleMessageClick}
+									>
+										Написать сообщение
+									</button>
+								</div>
 							)}
 						</div>
 					</div>
