@@ -10,6 +10,7 @@ import useAuthStore from '../../store/useAuthStore';
 import './share.css';
 import { useRef, useState } from 'react';
 import axios from 'axios';
+import { validateFile } from '../../utils/validateFile';
 
 const Share = () => {
 	// Получаем данные пользователя из стора
@@ -17,6 +18,16 @@ const Share = () => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 	const desc = useRef();
 	const [file, setFile] = useState(null);
+
+	const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    const error = validateFile(selectedFile);
+    if (error) {
+      alert(error);
+      return;
+    }
+    setFile(selectedFile);
+  };
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -73,7 +84,7 @@ const Share = () => {
 								type='file'
 								id='file'
 								accept='.png,.jpeg,.jpg'
-								onChange={(e) => setFile(e.target.files[0])}
+                onChange={handleFileChange}
 							/>
 						</label>
 						<div className='shareOption'>
