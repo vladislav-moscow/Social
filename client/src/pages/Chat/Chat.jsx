@@ -27,6 +27,7 @@ const Chat = () => {
 	const [file, setFile] = useState(null);
 	const [arrivalMessage, setArrivalMessage] = useState(null);
 	const [onlineUsers, setOnlineUsers] = useState([]);
+	//const [searchTerm, setSearchTerm] = useState(''); // Новое состояние для строки поиска
 	const socket = useRef();
 	const scrollRef = useRef();
 
@@ -80,6 +81,11 @@ const Chat = () => {
 	useEffect(() => {
 		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
 	}, [messages]);
+
+	/*// Фильтрация бесед на основе строки поиска
+	const filteredConversations = conversations.filter((c) =>
+		c.title.toLowerCase().includes(searchTerm.toLowerCase())
+	);*/
 
 	// Обработчик выбора беседы
 	const handleChatSelect = (chat) => {

@@ -1,17 +1,16 @@
 import './rightbar.css';
-//import { useUserStore } from '../../store/useUserStore';
-//import Online from '../Online/Online';
 
 const Rightbar = ({ user }) => {
 
 	const HomeRightbar = () => {
+		
+	
+		
 		return (
 			<>
 				<h4 className='rightbarTitle'>В сети:</h4>
 				<ul className='rightbarFriendList'>
-					{/*users.map((user) => (
-						<Online key={user.id} user={user} />
-					))*/}
+				
 				</ul>
 			</>
 		);
