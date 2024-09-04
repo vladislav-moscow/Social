@@ -6,7 +6,7 @@ import {
 	Room,
 } from '@mui/icons-material';
 import useAuthStore from '../../store/useAuthStore';
-
+import EmojiPicker from 'emoji-picker-react'; // Импортируем библиотеку Emoji Picker
 import './share.css';
 import { useRef, useState } from 'react';
 import axios from 'axios';
@@ -18,16 +18,24 @@ const Share = () => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 	const desc = useRef();
 	const [file, setFile] = useState(null);
+	const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Состояние для отображения пикера
 
 	const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    const error = validateFile(selectedFile);
-    if (error) {
-      alert(error);
-      return;
-    }
-    setFile(selectedFile);
-  };
+		const selectedFile = e.target.files[0];
+		const error = validateFile(selectedFile);
+		if (error) {
+			alert(error);
+			return;
+		}
+		setFile(selectedFile);
+	};
+
+	const onEmojiClick = (emojiObject) => {
+		console.log(emojiObject);
+		if (emojiObject && emojiObject.emoji) {
+			desc.current.value += emojiObject.emoji;
+		}
+	};
 
 	const submitHandler = async (e) => {
 		e.preventDefault();
@@ -47,6 +55,7 @@ const Share = () => {
 			} catch (err) {}
 		}
 		try {
+			setShowEmojiPicker(false)
 			await axios.post('/api/posts', newPost);
 			window.location.reload();
 		} catch (err) {}
@@ -84,7 +93,7 @@ const Share = () => {
 								type='file'
 								id='file'
 								accept='.png,.jpeg,.jpg'
-                onChange={handleFileChange}
+								onChange={handleFileChange}
 							/>
 						</label>
 						<div className='shareOption'>
@@ -95,10 +104,18 @@ const Share = () => {
 							<Room htmlColor='green' className='shareIcon' />
 							<span className='shareOptionText'>Место</span>
 						</div>
-						<div className='shareOption'>
+						<div
+							className='shareOption'
+							onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+						>
 							<EmojiEmotions htmlColor='goldenrod' className='shareIcon' />
 							<span className='shareOptionText'>Смайлики</span>
 						</div>
+						{showEmojiPicker && (
+							<div className='emojiPickerContainer'>
+								<EmojiPicker onEmojiClick={onEmojiClick} />
+							</div>
+						)}
 					</div>
 					<button className='shareButton' type='submit'>
 						Опубликовать
