@@ -91,3 +91,10 @@
 	cursor: pointer;
 	opacity: 0.7;
 }
+
+.emojiPickerContainer {
+	position: absolute;
+	z-index: 100;
+	top: 212px;
+	left: 30%;
+}
