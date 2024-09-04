@@ -36,6 +36,8 @@ const Post = ({ post }) => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 	const [menuVisible, setMenuVisible] = useState(false); // состояние для меню
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [newTag, setNewTag] = useState('');
+	const [newLocation, setNewLocation] = useState('');
 	const menuRef = useRef();
 
 	/**
@@ -153,10 +155,11 @@ const Post = ({ post }) => {
 					</div>
 				</div>
 				<div className='postCenter'>
-					<span className='postText'>{post?.desc}</span>{' '}
-					{/* Отображаем текст поста, если он есть. */}
-					<img className='postImg' src={PF + post?.img} alt='ImgPost' />{' '}
+					<span className='postText'>{post?.desc}</span>
 					{/* Отображаем изображение поста, если оно есть. */}
+					{post?.img && (
+						<img className='postImg' src={PF + post.img} alt='ImgPost' />
+					)}
 				</div>
 				<div className='postBottom'>
 					<div className='postBottomLeft'>
