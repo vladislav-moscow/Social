@@ -18,6 +18,13 @@ const PostSchema = new mongoose.Schema(
 			type: Array,
 			default: [],
 		},
+		tags: {
+			type: [String], // Массив строк для хранения тегов
+			default: [],
+		},
+		location: {
+			type: String, // Строка для хранения местоположения
+		},
 	},
 	{ timestamps: true }
 );

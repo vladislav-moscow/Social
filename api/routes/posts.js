@@ -8,7 +8,9 @@ const router = Router();
 
 router.post('/', async (req, res) => {
 	// Создаем новый пост, используя данные из тела запроса
-	const newPost = new Post(req.body);
+	const newPost = new Post({
+		...req.body, // Используем spread оператор для добавления всех данных из тела запроса
+	});
 	try {
 		// Сохраняем пост в базе данных
 		const savedPost = await newPost.save();
