@@ -108,3 +108,17 @@
 .postOptionsMenu button:hover {
 	background-color: #f5f5f5;
 }
+
+.postCenterLocation {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.postTopTagsList {
+	display: flex;
+	gap: 10px;
+	color: #525252;
+	font-size: 14px;
+	margin-top: 10px;
+}

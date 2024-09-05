@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MoreVert } from '@mui/icons-material';
+import { MoreVert, Room } from '@mui/icons-material';
 import './post.css';
 import { format, register } from 'timeago.js';
 import ru from 'timeago.js/lib/lang/ru';
@@ -36,8 +36,6 @@ const Post = ({ post }) => {
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 	const [menuVisible, setMenuVisible] = useState(false); // состояние для меню
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [newTag, setNewTag] = useState('');
-	const [newLocation, setNewLocation] = useState('');
 	const menuRef = useRef();
 
 	/**
@@ -154,11 +152,24 @@ const Post = ({ post }) => {
 						)}
 					</div>
 				</div>
+				{post?.tags && (
+					<div className='postTopTagsList'>
+						{post?.tags.map(tag => (
+						<span key={tag} className='postTopTagsListItem'>#{tag}</span>))}
+					</div>
+				)}
+
 				<div className='postCenter'>
 					<span className='postText'>{post?.desc}</span>
 					{/* Отображаем изображение поста, если оно есть. */}
 					{post?.img && (
 						<img className='postImg' src={PF + post.img} alt='ImgPost' />
+					)}
+					{post?.location && (
+						<div className='postCenterLocation'>
+							<Room htmlColor='#8a2667' className='shareIcon' />
+							<span>{post.location}</span>
+						</div>
 					)}
 				</div>
 				<div className='postBottom'>
@@ -169,13 +180,14 @@ const Post = ({ post }) => {
 							onClick={likeHandler} // Добавляем обработчик клика по иконке.
 							alt='' // Альтернативный текст для изображения.
 						/>
+
 						<span className='postLikeCounter'>
 							{likeState.likeCount} нравится{' '}
 							{/* Отображаем количество лайков. */}
 						</span>
 					</div>
 					<div className='postBottomRight'>
-						<span className='postCommentText'>{post.comment} комментария</span>{' '}
+						<span className='postCommentText'>{post.comment} комментарии</span>
 						{/* Отображаем количество комментариев. */}
 					</div>
 				</div>
