@@ -3,6 +3,7 @@
 	border-radius: 10px;
 	-webkit-box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
 	box-shadow: 0px 0px 16px -8px rgba(0, 0, 0, 0.68);
+	position: relative;
 }
 
 .shareWrapper {
@@ -97,4 +98,69 @@
 	z-index: 100;
 	top: 212px;
 	left: 30%;
+}
+
+.locationInput {
+	border: none;
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+	outline: none;
+	width: 100%;
+}
+
+.selectedLocation {
+	display: flex;
+	align-items: center;
+}
+
+.locationText {
+	margin-right: 5px;
+}
+
+.locationCancel {
+	cursor: pointer;
+	color: red;
+}
+
+.tagsOverlay {
+	position: absolute;
+	top: 100%; /* Позиционируем ниже инпута */
+	left: 0;
+	width: 97.5%;
+	background-color: rgba(255, 255, 255, 0.9);
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	padding: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	z-index: 10;
+}
+
+.tagItem {
+	background-color: #e0e0e0;
+	border-radius: 5px;
+	padding: 5px 10px;
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+}
+
+.tagItem span {
+	margin-right: 5px;
+}
+
+.tagCancel {
+	cursor: pointer;
+	color: red;
+	font-size: 14px;
+}
+
+.tagInput {
+	width: 120px;
+	border: none;
+	
+	outline: none;
+	padding: 5px;
+	flex: 1;
 }
