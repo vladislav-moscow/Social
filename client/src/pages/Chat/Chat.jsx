@@ -10,7 +10,7 @@ import useConversationStore from '../../store/useConversationStore';
 import useMessageStore from '../../store/useMessageStore';
 import { Cancel, PermMedia } from '@mui/icons-material';
 import axios from 'axios';
-import { io } from 'socket.io-client';
+import socket from '../../utils/socket'; // путь к вашему файлу socket.js
 
 const Chat = () => {
 	const {
@@ -22,25 +22,29 @@ const Chat = () => {
 	const user = useAuthStore((state) => state.getUser());
 	const { messages, fetchMessages, sendMessage, updateMessages } =
 		useMessageStore();
+		const { onlineUsers } = useAuthStore((state) => ({
+			onlineUsers: state.onlineUsers,
+		}));
 	const [currentChat, setCurrentChat] = useState(null);
 	const [newMessage, setNewMessage] = useState('');
 	const [file, setFile] = useState(null);
 	const [arrivalMessage, setArrivalMessage] = useState(null);
-	const [onlineUsers, setOnlineUsers] = useState([]);
-	//const [searchTerm, setSearchTerm] = useState(''); // Новое состояние для строки поиска
-	const socket = useRef();
 	const scrollRef = useRef();
 
 	useEffect(() => {
-		socket.current = io('ws://localhost:8900');
-		socket.current.on('getMessage', (data) => {
-			setArrivalMessage({
-				sender: data.senderId,
-				text: data.text,
-				createdAt: Date.now(),
-			});
-		});
-	}, []);
+    if (user) {
+      socket.on('getMessage', (data) => {
+        setArrivalMessage({
+          sender: data.senderId,
+          text: data.text,
+          createdAt: Date.now(),
+        });
+      });
+    }
+		return () => {
+			socket.off('getMessage');
+		};
+  }, [user]);
 
 	// Обновление сообщений при получении нового через WebSocket
 	useEffect(() => {
@@ -51,15 +55,6 @@ const Chat = () => {
 			updateMessages(currentChat._id, arrivalMessage);
 		}
 	}, [arrivalMessage, currentChat, updateMessages]);
-
-	useEffect(() => {
-		socket.current.emit('addUser', user._id);
-		socket.current.on('getUsers', (users) => {
-			setOnlineUsers(
-				user.followings.filter((f) => users.some((u) => u.userId === f))
-			);
-		});
-	}, [user]);
 
 	// Загрузка бесед при монтировании компонента
 	useEffect(() => {
@@ -81,11 +76,6 @@ const Chat = () => {
 	useEffect(() => {
 		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
 	}, [messages]);
-
-	/*// Фильтрация бесед на основе строки поиска
-	const filteredConversations = conversations.filter((c) =>
-		c.title.toLowerCase().includes(searchTerm.toLowerCase())
-	);*/
 
 	// Обработчик выбора беседы
 	const handleChatSelect = (chat) => {
@@ -119,7 +109,7 @@ const Chat = () => {
 		const receiverId = currentChat.members.find(
 			(member) => member !== user._id
 		);
-		socket.current.emit('sendMessage', {
+		socket.emit('sendMessage', {
 			senderId: user._id,
 			receiverId,
 			text: newMessage,
