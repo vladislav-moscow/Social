@@ -1,9 +1,9 @@
 import useAuthStore from '../../store/useAuthStore';
 import useUserStore from '../../store/useUserStore';
 import { useEffect } from 'react';
-
 import SidebarList from '../SidebarList/SidebarList';
 import Friend from '../Friend/Friend';
+import { Skeleton } from '@mui/material';
 
 import './sidebar.css';
 
@@ -38,15 +38,35 @@ const Sidebar = () => {
 		}
 	}, [user, fetchUser, getUserById]);
 
-	// Отображаем индикатор загрузки, если данные еще загружаются.
-	if (isFetching) return <p>Загрузка...</p>;
+	// Отображаем скелетон, если данные еще загружаются.
+	if (isFetching)
+		return (
+			<div className='sidebar'>
+				<div className='sidebarWrapper'>
+					<SidebarList isLoading={isFetching} />
+					<h2 className='sidebarMyFriend'>Мои друзья:</h2>
+					<div className='sidebarFriendList'>
+						{[...Array(5)].map((_, index) => (
+							<Skeleton
+								key={index}
+								variant='rectangular'
+								width='25%'
+								height={30}
+								sx={{ mb: 1 }}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
+		);
+
 	// Отображаем сообщение об ошибке, если произошла ошибка при загрузке данных.
 	if (error) return <p>Ошибка: {error}</p>;
 
 	return (
 		<div className='sidebar'>
 			<div className='sidebarWrapper'>
-				<SidebarList/>
+				<SidebarList />
 				<h2 className='sidebarMyFriend'>Мои друзья:</h2>
 				<ul className='sidebarFriendList'>
 					{/* Проверяем, есть ли друзья у пользователя */}
