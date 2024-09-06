@@ -4,13 +4,11 @@ import Register from '../../pages/Register/Register';
 import Home from '../../pages/Home/Home';
 import Profile from '../../pages/Profile/Profile';
 import Chat from '../../pages/Chat/Chat';
-import useAuthStore from '../../store/useAuthStore'; // Путь к вашему Zustand store
 import Job from '../../pages/Job/Job';
 import Course from '../../pages/Course/Course';
 
 /** Корневой компонент приложения с роутами */
-const AppRoutes = () => {
-	const { user } = useAuthStore(); // Получаем пользователя из Zustand store
+const AppRoutes = ({user}) => {
 
 	return (
 		<Routes>
