@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import axios from 'axios';
 
+
 /**
  * Zustand store для управления состоянием аутентификации пользователей.
  * Включает действия для входа, регистрации, подписок и выхода из системы.
@@ -13,6 +14,8 @@ const useAuthStore = create(
 		user: JSON.parse(localStorage.getItem('user')) || null, // Инициализируем состояние пользователя из localStorage или null, если пользователь не аутентифицирован.
 		isFetching: false, // Флаг загрузки данных, чтобы отслеживать состояние загрузки.
 		error: false, // Флаг ошибки, чтобы отслеживать состояние ошибок.
+		onlineUsers: [],
+
 
 		// ===== Селекторы =====
 
@@ -166,6 +169,19 @@ const useAuthStore = create(
 				// Возвращаем новое состояние с обновленным пользователем.
 				return { user: updatedUser };
 			}),
+		// Новый метод для обновления списка онлайн пользователей
+		setOnlineUsers: (users) => set({ onlineUsers: users }),
+		
+    updateUserOnlineStatus: (userId, status) =>
+      set((state) => {
+        if (status === 'online') {
+          return { onlineUsers: [...state.onlineUsers, userId] };
+        } else if (status === 'offline') {
+          return {
+            onlineUsers: state.onlineUsers.filter((id) => id !== userId),
+          };
+        }
+      }),
 	}))
 );
 
