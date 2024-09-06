@@ -22,6 +22,10 @@ const Login = () => {
 	// Извлечение состояния и действий из Zustand store
 	const { isFetching, loginCall, error } = useAuthStore();
 
+	
+
+  
+
 	/**
 	 * Обработчик события отправки формы.
 	 *
@@ -51,6 +55,7 @@ const Login = () => {
 
 		// Вызов функции для входа
 		await loginCall(formValues);
+		
 	};
 
 	return (
