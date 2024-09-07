@@ -4,6 +4,14 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import Rightbar from '../../components/Rightbar/Rightbar';
 import JobFeed from "../../components/JobFeed/JobFeed";
 
+/**
+ * Компонент страницы "Работа".
+ * 
+ * Отображает страницу с элементами верхней панели, боковой панели, основной ленты работы и правой панели.
+ * 
+ * @returns {JSX.Element} Компонент страницы "Работа".
+ */
+
 const Job = () => {
 	return (
 		<>

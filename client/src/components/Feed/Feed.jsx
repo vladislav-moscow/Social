@@ -6,21 +6,35 @@ import usePostStore from '../../store/usePostStore';
 import './feed.css';
 import { Skeleton } from '@mui/material';
 
+/**
+ * Компонент `Feed` отображает ленту постов и компонент для создания новых постов.
+ *
+ * @param {Object} props - Свойства компонента.
+ * @param {string} props.username - Имя пользователя, для которого отображаются посты (если задано).
+ *
+ * @returns {JSX.Element} Компонент, отображающий ленту постов и, при необходимости, компонент Share.
+ */
+
 const Feed = ({ username }) => {
-	// Получаем данные пользователя из стора
+	// Получаем данные текущего пользователя из стора
 	const user = useAuthStore((state) => state.getUser());
+	// Получаем состояние постов и функцию для их загрузки из стора
 	const { posts, fetchPosts } = usePostStore();
+	// Состояние для отслеживания процесса загрузки данных
 	const [loading, setLoading] = useState(true);
 
+	/**
+	 * useEffect для загрузки постов текущего пользователя или указанного пользователя при изменении `username` или `user`.
+	 */
 	useEffect(() => {
 		if (user) {
-				fetchPosts(user._id, username).finally(() => setLoading(false));
+			// Загружаем посты текущего пользователя или указанного пользователя
+			fetchPosts(user._id, username).finally(() => setLoading(false));
 		}
-}, [username, user, fetchPosts]);
+	}, [username, user, fetchPosts]);
 
-	// Отображаем компонент Share, если мы на странице профиля текущего пользователя или всегда
+	// Определяем, следует ли отображать компонент Share (если мы на странице профиля текущего пользователя или если `username` не задан)
 	const showShareComponent = username === user.username || !username;
-
 	return (
 		<div className='feed'>
 			<div className='feedWrapper'>

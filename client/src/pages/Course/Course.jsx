@@ -4,6 +4,11 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Topbar from "../../components/Topbar/Topbar";
 import "./course.css";
 
+/**
+ * Компонент `Course` представляет собой страницу курса, включающую несколько панелей.
+ * @returns {JSX.Element} Компонент страницы курса.
+ */
+
 const Course = () => {
 	return (
 		<>
