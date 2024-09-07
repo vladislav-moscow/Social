@@ -164,5 +164,38 @@ router.put('/:id/unfollow', async (req, res) => {
 	}
 });
 
+// Получение подписчиков пользователя по его ID
+router.get("/followers/:userId", async (req, res) => {
+  try {
+    // Находим пользователя по его ID
+    const user = await User.findById(req.params.userId);
+
+    // Проверяем, есть ли такой пользователь
+    if (!user) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // Получаем подписчиков пользователя с помощью Promise.all
+    const followers = await Promise.all(
+      user.followers.map((followerId) => {
+        return User.findById(followerId);
+      })
+    );
+
+    // Формируем список подписчиков, включая только нужные поля
+    let followerList = [];
+    followers.map((follower) => {
+      const { _id, username, profilePicture } = follower;
+      followerList.push({ _id, username, profilePicture });
+    });
+
+    // Возвращаем список подписчиков в формате JSON
+    res.status(200).json(followerList);
+  } catch (err) {
+    // В случае ошибки возвращаем код 500 и сообщение об ошибке
+    res.status(500).json({ message: 'Ошибка сервера', error: err.message });
+  }
+});
+
 
 export default router;
