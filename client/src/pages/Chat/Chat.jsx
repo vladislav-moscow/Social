@@ -12,41 +12,47 @@ import { Cancel, PermMedia } from '@mui/icons-material';
 import axios from 'axios';
 import socket from '../../utils/socket'; // путь к вашему файлу socket.js
 
+/**
+ * Компонент `Chat` представляет собой интерфейс для общения, включая списки бесед и сообщений.
+ * @returns {JSX.Element} Компонент чата.
+ */
+
 const Chat = () => {
 	const {
 		conversations,
 		fetchConversations,
 		saveCurrentChat,
 		loadCurrentChat,
-	} = useConversationStore();
-	const user = useAuthStore((state) => state.getUser());
+	} = useConversationStore(); // Получение данных бесед
+	const user = useAuthStore((state) => state.getUser()); // Получение данных пользователя
 	const { messages, fetchMessages, sendMessage, updateMessages } =
-		useMessageStore();
-		const { onlineUsers } = useAuthStore((state) => ({
-			onlineUsers: state.onlineUsers,
-		}));
-	const [currentChat, setCurrentChat] = useState(null);
-	const [newMessage, setNewMessage] = useState('');
-	const [file, setFile] = useState(null);
-	const [arrivalMessage, setArrivalMessage] = useState(null);
-	const scrollRef = useRef();
+		useMessageStore(); // Получение и управление сообщениями
+	const { onlineUsers } = useAuthStore((state) => ({
+		onlineUsers: state.onlineUsers, // Получение списка онлайн пользователей
+	}));
+	const [currentChat, setCurrentChat] = useState(null); // Хранение текущей беседы
+	const [newMessage, setNewMessage] = useState(''); // Хранение нового сообщения
+	const [file, setFile] = useState(null); // Хранение выбранного файла
+	const [arrivalMessage, setArrivalMessage] = useState(null); // Хранение сообщения, полученного через WebSocket
+	const scrollRef = useRef(); // Ссылка на элемент для прокрутки
 
+	// Настройка WebSocket для получения новых сообщений
 	useEffect(() => {
-    if (user) {
-      socket.on('getMessage', (data) => {
-        setArrivalMessage({
-          sender: data.senderId,
-          text: data.text,
-          createdAt: Date.now(),
-        });
-      });
-    }
+		if (user) {
+			socket.on('getMessage', (data) => {
+				setArrivalMessage({
+					sender: data.senderId,
+					text: data.text,
+					createdAt: Date.now(),
+				});
+			});
+		}
 		return () => {
 			socket.off('getMessage');
 		};
-  }, [user]);
+	}, [user]);
 
-	// Обновление сообщений при получении нового через WebSocket
+	// Обновление сообщений при получении нового сообщения через WebSocket
 	useEffect(() => {
 		if (
 			arrivalMessage &&
@@ -61,7 +67,7 @@ const Chat = () => {
 		fetchConversations(user._id);
 	}, [user._id, fetchConversations]);
 
-	// Загрузка текущей беседы из локального хранилища при монтировании компонента
+	// Загрузка текущей беседы из локального хранилища
 	useEffect(() => {
 		const savedChatId = loadCurrentChat(user._id);
 		if (savedChatId && conversations.length > 0) {
@@ -73,6 +79,7 @@ const Chat = () => {
 		}
 	}, [conversations, user._id, fetchMessages, loadCurrentChat]);
 
+	// Прокрутка к последнему сообщению
 	useEffect(() => {
 		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
 	}, [messages]);
@@ -84,6 +91,7 @@ const Chat = () => {
 		fetchMessages(chat._id);
 	};
 
+	// Обработчик отправки сообщения
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const message = {
@@ -98,10 +106,11 @@ const Chat = () => {
 			data.append('name', fileName);
 			data.append('file', file);
 			message.img = fileName;
-			console.log(message);
 			try {
 				await axios.post('/api/upload', data);
-			} catch (err) {}
+			} catch (err) {
+				console.error('Error uploading file:', err); // Логирование ошибки при загрузке файла
+			}
 		}
 		await sendMessage(message);
 
@@ -144,7 +153,11 @@ const Chat = () => {
 								<div className='chatBoxTop'>
 									{messages[currentChat._id]?.map((m) => (
 										<div key={m._id} ref={scrollRef}>
-											<Message message={m} own={m.sender === user._id} currentUser={user}/>
+											<Message
+												message={m}
+												own={m.sender === user._id}
+												currentUser={user}
+											/>
 										</div>
 									))}
 								</div>
