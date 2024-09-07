@@ -1,31 +1,62 @@
 import { useEffect, useState } from 'react';
 import CardJob from '../CardJob/CardJob';
-import './jobFeed.css';
+import {Stack,Skeleton} from '@mui/material';
 import axios from 'axios';
+import './jobFeed.css';
+
+/**
+ * Компонент `JobFeed` отображает список вакансий.
+ *
+ * @returns {JSX.Element} Компонент, отображающий вакансии или сообщения о загрузке/ошибке.
+ */
 
 const JobFeed = () => {
 	const [jobs, setJobs] = useState([]); // Хранение списка вакансий в состоянии
 	const [loading, setLoading] = useState(true); // Состояние загрузки данных
-	const [error, setError] = useState(null); // Состояние для обработки ошибок
 
+	/**
+	 * useEffect для загрузки данных вакансий при монтировании компонента.
+	 */
 	useEffect(() => {
 		// Функция для получения всех вакансий
 		const fetchJobs = async () => {
 			try {
-				const response = await axios.get('/api/jobs'); // Выполняем GET-запрос к API
-				setJobs(response.data); // Обновляем состояние с полученными данными
+				// Выполняем GET-запрос к API для получения списка вакансий
+				const response = await axios.get('/api/jobs');
+				// Обновляем состояние с полученными данными вакансий
+				setJobs(response.data);
 			} catch (err) {
-				setError(err.message); // Обрабатываем ошибки, если они возникают
+				// Обрабатываем ошибки, если они возникают при выполнении запроса
+				console.error(err.message);
 			} finally {
-				setLoading(false); // Завершаем процесс загрузки
+				// Завершаем процесс загрузки, независимо от результата запроса
+				setLoading(false);
 			}
 		};
+		// Вызываем функцию для получения данных вакансий
+		fetchJobs();
+	}, []); // Пустой массив зависимостей означает, что useEffect выполнится только один раз при монтировании компонента
 
-		fetchJobs(); // Вызываем функцию для получения данных
-	}, []); // Пустой массив зависимостей означает, что useEffect выполнится только один раз при монтировании
-
-	if (loading) return <p>Loading...</p>; // Показываем сообщение о загрузке
-	if (error) return <p>Error: {error}</p>; // Показываем сообщение об ошибке
+	// Показываем скелетоны, пока данные не загружены
+	if (loading) {
+		return (
+				<div className='cardJob'>
+						<div className='cardJobWrapper'>
+								<Stack spacing={2}>
+										{[...Array(3)].map((_, index) => (
+												<Skeleton
+														key={index}
+														variant="rectangular"
+														width="100%"
+														height={400}
+														sx={{ borderRadius: 2 }}
+												/>
+										))}
+								</Stack>
+						</div>
+				</div>
+		);
+}
 	return (
 		<div className='cardJob'>
 			<div className='cardJobWrapper'>
