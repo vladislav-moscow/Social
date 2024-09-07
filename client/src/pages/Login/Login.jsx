@@ -10,6 +10,8 @@ import { validateLoginForm } from '../../utils/validators';
  *
  * Этот компонент включает форму для входа, обработку валидации данных,
  * а также взаимодействие с хранилищем состояния (Zustand store) для выполнения запроса на вход.
+ *
+ * @returns {JSX.Element} Компонент страницы входа.
  */
 const Login = () => {
 	// Рефы для хранения значений полей email и password
@@ -22,15 +24,13 @@ const Login = () => {
 	// Извлечение состояния и действий из Zustand store
 	const { isFetching, loginCall, error } = useAuthStore();
 
-	
-
-  
-
 	/**
 	 * Обработчик события отправки формы.
 	 *
 	 * Выполняет валидацию введенных данных и, если ошибок нет, вызывает функцию для входа.
+	 *
 	 * @param {Event} e - Событие формы.
+	 * @returns {Promise<void>}
 	 */
 	const handleClick = async (e) => {
 		e.preventDefault();
@@ -49,13 +49,10 @@ const Login = () => {
 			setErrors(validationErrors);
 			return;
 		}
-
 		// Очистка ошибок перед отправкой данных
 		setErrors({});
-
 		// Вызов функции для входа
 		await loginCall(formValues);
-		
 	};
 
 	return (
@@ -88,7 +85,7 @@ const Login = () => {
 						/>
 						{/* Отображение ошибки пароля, если она есть */}
 						{error && <span className='error'>{error}</span>}
-						
+
 						{/* Кнопка для отправки формы; если идет запрос, отображается индикатор загрузки */}
 						<button className='loginButton' type='submit' disabled={isFetching}>
 							{isFetching ? (

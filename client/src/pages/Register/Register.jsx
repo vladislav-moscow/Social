@@ -10,6 +10,8 @@ import { CircularProgress } from '@mui/material';
  *
  * Этот компонент включает форму для регистрации, обработку валидации данных,
  * а также взаимодействие с хранилищем состояния (Zustand store) для выполнения запроса на регистрацию.
+ *
+ * @returns {JSX.Element} Компонент страницы регистрации.
  */
 const Register = () => {
 	// Рефы для хранения значений полей ввода
@@ -27,12 +29,16 @@ const Register = () => {
 	// Извлечение состояния и действий из Zustand store
 	const { isFetching, registerCall, clearError } = useAuthStore();
 
+
 	/**
 	 * Обработчик события отправки формы.
 	 *
 	 * Выполняет валидацию введенных данных и, если ошибок нет, вызывает функцию для регистрации.
+	 * 
 	 * @param {Event} e - Событие формы.
+	 * @returns {Promise<void>}
 	 */
+	
 	const handleClick = async (e) => {
 		e.preventDefault();
 

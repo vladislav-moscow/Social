@@ -14,8 +14,15 @@ import axios from 'axios';
 
 /**
  * Компонент для отображения профиля пользователя.
- * @returns {JSX.Element|null} - Возвращает JSX элемент с информацией о пользователе или null, если данные не загружены.
+ *
+ * Этот компонент включает отображение информации о пользователе,
+ * возможность подписки/отписки от пользователя, а также создание или
+ * получение беседы для отправки сообщения пользователю.
+ *
+ * @returns {JSX.Element|null} Возвращает JSX элемент с информацией о пользователе
+ * или null, если данные не загружены.
  */
+
 const Profile = () => {
 	// Получаем имя пользователя из параметров маршрута
 	const { username } = useParams();
@@ -32,7 +39,7 @@ const Profile = () => {
 	const fetchUserByUsername = useUserStore(
 		(state) => state.fetchUserByUsername
 	);
-
+	//Функции для создания и получение бесед
 	const { createConversation, getConversation } = useConversationStore(
 		(state) => ({
 			createConversation: state.createConversation,
@@ -88,7 +95,11 @@ const Profile = () => {
 		}
 	};
 
-	// Функция для создания или получения беседы и перехода на страницу чата
+	/**
+	 * Функция для создания или получения беседы и перехода на страницу чата.
+	 * Выполняет запрос для получения существующей беседы или создания новой и 
+	 * перенаправляет на страницу чата.
+	 */
 	const handleMessageClick = async () => {
 		if (currentUser._id !== user._id) {
 			try {
@@ -99,7 +110,9 @@ const Profile = () => {
 				);
 				if (existingConversation) {
 					// Сохраняем текущую беседу и переходим на страницу чата
-					useConversationStore.getState().saveCurrentChat(existingConversation);
+					useConversationStore
+						.getState()
+						.saveCurrentChat(currentUser._id, existingConversation);
 					navigate(`/chat`);
 				} else {
 					// Создаем новую беседу и переходим на страницу чата
