@@ -10,6 +10,13 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
+/**
+ * Компонент `SidebarList` отображает навигационный список боковой панели.
+ * @param {Object} props - Свойства компонента.
+ * @param {boolean} props.isLoading - Флаг, указывающий на состояние загрузки данных.
+ * @returns {JSX.Element} - Компонент боковой панели с навигационным списком.
+ */
+
 const SidebarList = ({ isLoading }) => {
 	return (
 		<>
@@ -30,7 +37,7 @@ const SidebarList = ({ isLoading }) => {
 					<li className='sidebarListItem'>
 						<Link to={'/'}>
 							<RssFeed htmlColor='#8a2667' className='sidebarIcon' />
-							<span className='sidebarListItemText'>Новости</span>
+							<span className='sidebarListItemText'>Лента</span>
 						</Link>
 					</li>
 					<li className='sidebarListItem'>
@@ -38,17 +45,6 @@ const SidebarList = ({ isLoading }) => {
 							<Chat htmlColor='#8a2667' className='sidebarIcon' />
 							<span className='sidebarListItemText'>Чат</span>
 						</Link>
-					</li>
-					<li className='sidebarListItem'>
-						<PlayCircleFilledOutlined
-							htmlColor='#8a2667'
-							className='sidebarIcon'
-						/>
-						<span className='sidebarListItemText'>Видео</span>
-					</li>
-					<li className='sidebarListItem'>
-						<Group htmlColor='#8a2667' className='sidebarIcon' />
-						<span className='sidebarListItemText'>Группы</span>
 					</li>
 					<li className='sidebarListItem'>
 						<Link to={'/job'}>
@@ -61,6 +57,17 @@ const SidebarList = ({ isLoading }) => {
 							<School htmlColor='#8a2667' className='sidebarIcon' />
 							<span className='sidebarListItemText'>Курсы</span>
 						</Link>
+					</li>
+					<li className='sidebarListItem'>
+						<PlayCircleFilledOutlined
+							htmlColor='#8a2667'
+							className='sidebarIcon'
+						/>
+						<span className='sidebarListItemText'>Видео</span>
+					</li>
+					<li className='sidebarListItem'>
+						<Group htmlColor='#8a2667' className='sidebarIcon' />
+						<span className='sidebarListItemText'>Группы</span>
 					</li>
 				</ul>
 			)}

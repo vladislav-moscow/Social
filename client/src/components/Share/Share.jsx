@@ -12,88 +12,117 @@ import { useRef, useState } from 'react';
 import axios from 'axios';
 import { validateFile } from '../../utils/validateFile';
 
+/**
+ * Компонент `Share` предоставляет интерфейс для создания и публикации нового поста.
+ * Пользователь может добавлять текст, фотографии, теги, место и смайлы.
+ * @returns {JSX.Element} - Рендерит компонент для создания поста.
+ */
+
 const Share = () => {
-	// Получаем данные пользователя из стора
+	// Получаем данные текущего пользователя из Zustand store
 	const user = useAuthStore((state) => state.getUser());
-	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
-	const desc = useRef();
-	//const location = useRef();
-	const [file, setFile] = useState(null);
-	const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Состояние для отображения пикера
-	const [location, setLocation] = useState(''); // Состояние для места
+	const PF = import.meta.env.VITE_PUBLIC_FOLDER; // Путь к публичной папке для профиля
+	const desc = useRef(); // Ссылка на инпут для ввода текста поста
+	const [file, setFile] = useState(null); // Состояние для хранения загруженного файла
+	const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Состояние для отображения/скрытия пикера смайлов
+	const [location, setLocation] = useState(''); // Состояние для хранения информации о месте
 	const [isEditingLocation, setIsEditingLocation] = useState(true); // Состояние для управления режимом редактирования места
 	const [tags, setTags] = useState([]); // Состояние для хранения тегов
-	const [tagInput, setTagInput] = useState(''); // Состояние для инпута тегов
-	const [showTags, setShowTags] = useState(true); // Показывать или скрывать теги
+	const [tagInput, setTagInput] = useState(''); // Состояние для значения инпута тегов
+	const [showTags, setShowTags] = useState(true); // Состояние для отображения/скрытия тегов
 
+	/**
+	 * Обработчик изменения файла. Валидирует файл и обновляет состояние.
+	 * @param {Event} e - Событие изменения файла.
+	 */
 	const handleFileChange = (e) => {
 		const selectedFile = e.target.files[0];
-		const error = validateFile(selectedFile);
+		const error = validateFile(selectedFile); // Валидация файла
 		if (error) {
-			alert(error);
+			alert(error); // Показ ошибки, если файл невалиден
 			return;
 		}
-		setFile(selectedFile);
+		setFile(selectedFile); // Обновляем состояние с выбранным файлом
 	};
 
+	/**
+	 * Обработчик выбора смайлов. Добавляет выбранный смайл в текст поста.
+	 * @param {Object} emojiObject - Объект выбранного смайла.
+	 */
 	const onEmojiClick = (emojiObject) => {
 		console.log(emojiObject);
 		if (emojiObject && emojiObject.emoji) {
-			desc.current.value += emojiObject.emoji;
+			desc.current.value += emojiObject.emoji; // Добавляем смайл в текст
 		}
 	};
 
+	/**
+	 * Обработчик изменения значения инпута для места.
+	 * @param {Event} e - Событие изменения значения инпута.
+	 */
 	const handleLocationChange = (e) => {
-		setLocation(e.target.value);
+		setLocation(e.target.value); // Обновляем состояние с новым значением места
 	};
 
+	/**
+	 * Обработчик удаления информации о месте.
+	 */
 	const handleRemoveLocation = () => {
-		setLocation('');
-		setIsEditingLocation(true);
+		setLocation(''); // Очищаем информацию о месте
+		setIsEditingLocation(true); // Включаем режим редактирования
 	};
-	
 
-	// Добавление тега при нажатии Enter или запятой
+	/**
+	 * Обработчик нажатия клавиш в инпуте для тегов. Добавляет тег при нажатии Enter или запятой.
+	 * @param {Event} e - Событие нажатия клавиш.
+	 */
 	const handleTagInputKeyDown = (e) => {
 		if (e.key === 'Enter' || e.key === ',') {
 			e.preventDefault();
 			if (tagInput.trim()) {
-				setTags((prevTags) => [...prevTags, tagInput.trim()]);
-				setTagInput('');
+				setTags((prevTags) => [...prevTags, tagInput.trim()]); // Добавляем тег в список
+				setTagInput(''); // Очищаем инпут для тегов
 			}
 		}
 	};
 
-	// Удаление тега
+	/**
+	 * Обработчик удаления тега из списка.
+	 * @param {string} tagToRemove - Тег, который нужно удалить.
+	 */
 	const handleRemoveTag = (tagToRemove) => {
-		setTags(tags.filter((tag) => tag !== tagToRemove));
+		setTags(tags.filter((tag) => tag !== tagToRemove)); // Фильтруем список тегов
 	};
 
+	/**
+	 * Обработчик отправки формы. Создает новый пост и отправляет его на сервер.
+	 * @param {Event} e - Событие отправки формы.
+	 */
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		const newPost = {
 			userId: user._id,
-			desc: desc.current.value,
-			location: location, // Добавляем место в данные поста
-			tags: tags, // Добавляем теги в данные поста
+			desc: desc.current.value, // Текст поста
+			location: location, // Место
+			tags: tags, // Теги
 		};
 		if (file) {
 			const data = new FormData();
-			const fileName = Date.now() + file.name;
+			const fileName = Date.now() + file.name; // Генерация уникального имени файла
 			data.append('name', fileName);
 			data.append('file', file);
-			newPost.img = fileName;
+			newPost.img = fileName; // Добавляем имя файла к данным поста
 			console.log(newPost);
 			try {
-				await axios.post('/api/upload', data);
+				await axios.post('/api/upload', data); // Загружаем файл на сервер
 			} catch (err) {}
 		}
 		try {
-			await axios.post('/api/posts', newPost);
+			await axios.post('/api/posts', newPost); // Отправляем данные поста на сервер
 			setShowTags(false); // Скрываем теги после отправки
-			setShowEmojiPicker(false);
+			setShowEmojiPicker(false); // Скрываем пикер смайлов
 
-			window.location.reload();
+			window.location.reload(); // Перезагружаем страницу после отправки
 		} catch (err) {}
 	};
 
