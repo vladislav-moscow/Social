@@ -6,6 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import useAuthStore from '../../store/useAuthStore';
 
+/**
+ * Компонент `Topbar` отображает верхнюю панель с навигацией и пользовательским меню.
+ * @returns {JSX.Element} Компонент верхней панели.
+ */
+
 const Topbar = () => {
 	// Получаем данные пользователя из стора
 	const user = useAuthStore((state) => state.getUser());
@@ -15,14 +20,20 @@ const Topbar = () => {
 	const logout = useAuthStore((state) => state.logout);
 	// Используем useNavigate для перенаправления
 	const navigate = useNavigate();
+	// Получаем путь к публичной папке из окружения для формирования полного пути к изображениям.
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
 
-	// Обработчик клика по изображению пользователя
+	/**
+	 * Обработчик клика по изображению пользователя.
+	 * Переключает состояние отображения меню.
+	 */
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
 	};
 
-	// Закрываем меню при клике вне его области
+	/**
+	 * Закрывает меню при клике вне его области.
+	 */
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (!event.target.closest('.topbarImg, .dropdownMenu')) {
@@ -36,7 +47,10 @@ const Topbar = () => {
 		};
 	}, []);
 
-	// Обработчик выхода из системы
+	/**
+	 * Обработчик выхода из системы.
+	 * Вызывает действие logout и перенаправляет на страницу входа.
+	 */
 	const handleLogout = () => {
 		logout(); // Вызываем действие logout
 		navigate('/login'); // Перенаправляем на страницу входа
@@ -59,10 +73,6 @@ const Topbar = () => {
 				</div>
 			</div>
 			<div className='topbarRight'>
-				<div className='topbarLinks'>
-					{/*<span className="topbarLink">Homepage</span>
-          <span className="topbarLink">Timeline</span>*/}
-				</div>
 				<div className='topbarIcons'>
 					<div className='topbarIconItem'>
 						<Person />
