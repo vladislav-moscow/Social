@@ -3,10 +3,30 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import axios from 'axios';
 
-
 /**
  * Zustand store для управления состоянием аутентификации пользователей.
- * Включает действия для входа, регистрации, подписок и выхода из системы.
+ * Используется для обработки действий входа в систему, регистрации, подписок и выхода.
+ * Также управляет состоянием загрузки, ошибками и списком онлайн пользователей.
+ *
+ * @typedef {Object} AuthState
+ * @property {Object|null} user - Данные текущего пользователя или null, если пользователь не аутентифицирован.
+ * @property {boolean} isFetching - Флаг загрузки, указывающий на выполнение запроса.
+ * @property {boolean} error - Флаг ошибки, указывающий на наличие ошибки при выполнении запроса.
+ * @property {Array<string>} onlineUsers - Массив ID пользователей, которые в данный момент онлайн.
+ * @property {Function} getUser - Получает текущего пользователя.
+ * @property {Function} isAuthenticated - Проверяет, аутентифицирован ли пользователь.
+ * @property {Function} getUserProperty - Получает конкретное свойство пользователя.
+ * @property {Function} loginStart - Начинает процесс аутентификации, устанавливая флаги загрузки и ошибок.
+ * @property {Function} loginSuccess - Устанавливает данные пользователя при успешном входе в систему.
+ * @property {Function} loginFailure - Устанавливает флаги для неудачного входа.
+ * @property {Function} loginCall - Выполняет запрос для аутентификации пользователя.
+ * @property {Function} registerCall - Выполняет запрос для регистрации нового пользователя.
+ * @property {Function} clearError - Очищает ошибки.
+ * @property {Function} logout - Выполняет выход из системы, очищая данные пользователя.
+ * @property {Function} follow - Добавляет пользователя в список подписок (follow).
+ * @property {Function} unfollow - Удаляет пользователя из списка подписок (unfollow).
+ * @property {Function} setOnlineUsers - Устанавливает список онлайн пользователей.
+ * @property {Function} updateUserOnlineStatus - Обновляет статус пользователя (online/offline).
  */
 const useAuthStore = create(
 	devtools((set, get) => ({
@@ -14,8 +34,7 @@ const useAuthStore = create(
 		user: JSON.parse(localStorage.getItem('user')) || null, // Инициализируем состояние пользователя из localStorage или null, если пользователь не аутентифицирован.
 		isFetching: false, // Флаг загрузки данных, чтобы отслеживать состояние загрузки.
 		error: false, // Флаг ошибки, чтобы отслеживать состояние ошибок.
-		onlineUsers: [],
-
+		onlineUsers: [], // Список пользователей, которые в данный момент онлайн.
 
 		// ===== Селекторы =====
 
@@ -169,19 +188,28 @@ const useAuthStore = create(
 				// Возвращаем новое состояние с обновленным пользователем.
 				return { user: updatedUser };
 			}),
-		// Новый метод для обновления списка онлайн пользователей
+
+		/**
+		 * Устанавливает список онлайн пользователей.
+		 * @param {Array<string>} users - Массив ID пользователей, которые сейчас онлайн.
+		 */
 		setOnlineUsers: (users) => set({ onlineUsers: users }),
-		
-    updateUserOnlineStatus: (userId, status) =>
-      set((state) => {
-        if (status === 'online') {
-          return { onlineUsers: [...state.onlineUsers, userId] };
-        } else if (status === 'offline') {
-          return {
-            onlineUsers: state.onlineUsers.filter((id) => id !== userId),
-          };
-        }
-      }),
+
+		/**
+		 * Обновляет статус пользователя (online/offline).
+		 * @param {string} userId - ID пользователя, чей статус нужно обновить.
+		 * @param {string} status - Новый статус пользователя ('online' или 'offline').
+		 */
+		updateUserOnlineStatus: (userId, status) =>
+			set((state) => {
+				if (status === 'online') {
+					return { onlineUsers: [...state.onlineUsers, userId] }; // Добавляем пользователя в список онлайн.
+				} else if (status === 'offline') {
+					return {
+						onlineUsers: state.onlineUsers.filter((id) => id !== userId), // Удаляем пользователя из списка онлайн.
+					};
+				}
+			}),
 	}))
 );
 

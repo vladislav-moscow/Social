@@ -5,7 +5,28 @@ import useUserStore from './useUserStore'; // Импортируем новый 
 
 /**
  * Zustand store для управления состоянием постов.
- * Включает действия для получения постов, их сортировки, сохранения, лайков и очистки состояния.
+ * Хранит посты, обрабатывает запросы на получение, удаление, лайк и очистку постов.
+ *
+ * @typedef {Object} Post
+ * @property {string} _id - Идентификатор поста.
+ * @property {string} userId - Идентификатор пользователя, создавшего пост.
+ * @property {string} text - Текст поста.
+ * @property {Date} createdAt - Дата и время создания поста.
+ * @property {string[]} likes - Массив идентификаторов пользователей, которые лайкнули пост.
+ *
+ * @typedef {Object} PostStore
+ * @property {Post[]} posts - Массив постов.
+ * @property {boolean} isFetching - Флаг, указывающий на выполнение запроса (загрузка данных).
+ * @property {boolean|string} error - Переменная для хранения сообщения об ошибке, если она возникла.
+ * @property {Function} fetchPostsStart - Устанавливает состояние загрузки и сбрасывает ошибки.
+ * @property {Function} fetchPostsSuccess - Обрабатывает успешное получение постов, сортирует и сохраняет их.
+ * @property {Function} fetchPostsFailure - Обрабатывает ошибку при получении постов.
+ * @property {Function} fetchPosts - Асинхронная функция для получения постов по ID пользователя или имени.
+ * @property {Function} deletePost - Асинхронная функция для удаления поста.
+ * @property {Function} clearPosts - Очистка состояния постов.
+ * @property {Function} fetchPostUser - Асинхронная функция для получения данных пользователя, создавшего пост.
+ * @property {Function} likePost - Асинхронная функция для лайка поста.
+ * @property {Function} toggleLike - Метод для переключения лайка на посте.
  */
 const usePostStore = create(
 	devtools((set, get) => ({
@@ -22,7 +43,7 @@ const usePostStore = create(
 
 		/**
 		 * Успешное получение постов.
-		 * @param {Array} posts - Массив постов, полученных с сервера.
+		 * @param {Post[]} posts - Массив постов, полученных с сервера.
 		 * Сортирует посты по дате создания, сохраняет их в localStorage и обновляет состояние стора.
 		 */
 		fetchPostsSuccess: (posts) => {
@@ -47,7 +68,8 @@ const usePostStore = create(
 		/**
 		 * Асинхронная функция для получения постов.
 		 * @param {string} userId - ID пользователя, для которого загружаются посты.
-		 * @param {string} username - Имя пользователя (опционально), для которого загружаются посты.
+		 * @param {string} [username] - Имя пользователя (опционально), для которого загружаются посты.
+		 * В зависимости от наличия username выполняет соответствующий запрос к API.
 		 */
 		fetchPosts: async (userId, username) => {
 			set({ isFetching: true, error: false }); // Устанавливаем состояние загрузки перед запросом.
@@ -75,16 +97,20 @@ const usePostStore = create(
 		/**
 		 * Асинхронная функция для удаления поста.
 		 * @param {string} postId - ID поста, который необходимо удалить.
-		 * @param {string} userId - ID пользователя  который хочет удалить.
+		 * @param {string} userId - ID пользователя, который хочет удалить пост.
 		 */
 		deletePost: async (postId, userId) => {
 			try {
 				// Отправляем запрос на сервер для удаления поста
-				const res = await axios.delete(`/api/posts/${postId}`, { data: { userId } });
+				const res = await axios.delete(`/api/posts/${postId}`, {
+					data: { userId },
+				});
 				if (res.status === 200) {
 					// Если удаление прошло успешно, обновляем состояние
 					set((state) => {
-						const updatedPosts = state.posts.filter((post) => post._id !== postId);
+						const updatedPosts = state.posts.filter(
+							(post) => post._id !== postId
+						);
 						localStorage.setItem('posts', JSON.stringify(updatedPosts));
 						return { posts: updatedPosts };
 					});
