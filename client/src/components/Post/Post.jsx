@@ -24,28 +24,27 @@ register('ru', ru);
  * @param {number} post.comment - Количество комментариев к посту.
  * @returns {JSX.Element} - Рендерит элемент поста.
  */
+
 const Post = ({ post }) => {
 	// Получаем данные текущего пользователя из Zustand store.
 	const user = useAuthStore((state) => state.user);
+
 	// Получаем функции для работы с постами и пользователями из Zustand store.
 	const fetchPostUser = usePostStore((state) => state.fetchPostUser); // Функция для загрузки данных пользователя, создавшего пост.
 	const getUserById = useUserStore((state) => state.getUserById); // Функция для получения данных пользователя по его ID.
 	const toggleLike = usePostStore((state) => state.toggleLike); // Функция для обработки лайков.
 	const deletePost = usePostStore((state) => state.deletePost); // Функция удаление поста
+
 	// Получаем путь к публичной папке из окружения для формирования полного пути к изображениям.
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
-	const [menuVisible, setMenuVisible] = useState(false); // состояние для меню
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const menuRef = useRef();
+	const [menuVisible, setMenuVisible] = useState(false); // Состояние для управления видимостью меню
+	const [isModalOpen, setIsModalOpen] = useState(false); // Состояние для управления видимостью модального окна
+	const menuRef = useRef(); // Ссылка на элемент меню для отслеживания кликов вне его
 
-	/**
-	 * Инициализируем состояние для лайков.
-	 * @param {number} likeState - количество лайков на посте.
-	 * @param {boolean} isLiked - флаг, указывающий, лайкнул ли текущий пользователь этот пост.
-	 */
+	// Инициализируем состояние для лайков.
 	const [likeState, setLikeState] = useState({
-		likeCount: post.likes.length,
-		isLiked: post.likes.includes(user._id),
+		likeCount: post.likes.length, // Количество лайков
+		isLiked: post.likes.includes(user._id), // Проверяем, лайкнул ли текущий пользователь этот пост
 	});
 
 	// Форматируем дату создания поста с использованием timeago.js и русской локализации.
@@ -53,9 +52,10 @@ const Post = ({ post }) => {
 
 	// Используем useEffect для загрузки данных пользователя, создавшего пост, при монтировании компонента.
 	useEffect(() => {
-		fetchPostUser(post.userId);
+		fetchPostUser(post.userId); // Загружаем данные пользователя
 	}, [post.userId, fetchPostUser]);
 
+	// Обработчик кликов вне меню для закрытия меню.
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -65,18 +65,18 @@ const Post = ({ post }) => {
 
 		const disableScroll = () => {
 			if (isModalOpen) {
-				document.body.style.overflow = 'hidden';
+				document.body.style.overflow = 'hidden'; // Отключаем прокрутку, когда модальное окно открыто
 			} else {
-				document.body.style.overflow = '';
+				document.body.style.overflow = ''; // Включаем прокрутку, когда модальное окно закрыто
 			}
 		};
 
-		document.addEventListener('mousedown', handleClickOutside);
-		disableScroll();
+		document.addEventListener('mousedown', handleClickOutside); // Добавляем обработчик кликов вне меню
+		disableScroll(); // Применяем изменения прокрутки
 
 		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-			document.body.style.overflow = '';
+			document.removeEventListener('mousedown', handleClickOutside); // Убираем обработчик при размонтировании
+			document.body.style.overflow = ''; // Возвращаем стандартное состояние прокрутки
 		};
 	}, [menuVisible, isModalOpen]);
 
@@ -104,21 +104,34 @@ const Post = ({ post }) => {
 		}));
 	};
 
+	/**
+	 * Обработчик клика по иконке для отображения или скрытия меню опций.
+	 * Переключает видимость меню.
+	 */
 	const handleMenuToggle = () => {
-		setMenuVisible((prev) => !prev);
+		setMenuVisible((prev) => !prev); // Переключаем видимость меню
 	};
 
+	/**
+	 * Обработчик клика для открытия модального окна подтверждения удаления поста.
+	 */
 	const handleDelete = () => {
-		setIsModalOpen(true);
+		setIsModalOpen(true); // Открываем модальное окно подтверждения удаления
 	};
 
+	/**
+	 * Закрывает модальное окно подтверждения удаления поста.
+	 */
 	const closeModal = () => {
-		setIsModalOpen(false);
+		setIsModalOpen(false); // Закрываем модальное окно
 	};
 
+	/**
+	 * Подтверждает удаление поста и закрывает модальное окно.
+	 */
 	const confirmDelete = () => {
-		deletePost(post._id, user._id);
-		closeModal();
+		deletePost(post._id, user._id); // Удаляем пост
+		closeModal(); // Закрываем модальное окно после удаления
 	};
 
 	return (
@@ -154,8 +167,11 @@ const Post = ({ post }) => {
 				</div>
 				{post?.tags && (
 					<div className='postTopTagsList'>
-						{post?.tags.map(tag => (
-						<span key={tag} className='postTopTagsListItem'>#{tag}</span>))}
+						{post?.tags.map((tag) => (
+							<span key={tag} className='postTopTagsListItem'>
+								#{tag}
+							</span>
+						))}
 					</div>
 				)}
 

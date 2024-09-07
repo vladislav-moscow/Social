@@ -14,24 +14,15 @@ import useConversationStore from '../../store/useConversationStore';
  * @returns {JSX.Element} Компонент, отображающий онлайн-друзей и предоставляющий возможность начать с ними беседу.
  */
 const ChatOnline = ({ onlineUsers, currentId, setCurrentChat }) => {
-	/**
-	 * Состояние для хранения списка онлайн-друзей.
-	 * @type {Array<Object>}
-	 */
-	const [onlineFriends, setOnlineFriends] = useState([]);
-
-	/**
-	 * Константа для хранения базового пути к изображениям.
-	 * @type {string}
-	 */
+	//Константа для хранения базового пути к изображениям.
 	const PF = import.meta.env.VITE_PUBLIC_FOLDER;
-
+	//Состояние для хранения списка онлайн-друзей.
+	const [onlineFriends, setOnlineFriends] = useState([]);
 	// Извлечение состояния и методов из Zustand store для управления пользователями
 	const { users } = useUserStore((state) => ({
 		users: state.users,
 		fetchFriends: state.fetchFriends,
 	}));
-
 	// Извлечение методов из Zustand store для управления беседами
 	const { fetchConversations, getConversation, createConversation } =
 		useConversationStore((state) => ({
@@ -51,6 +42,7 @@ const ChatOnline = ({ onlineUsers, currentId, setCurrentChat }) => {
 	 * Эффект для обновления списка онлайн-друзей на основе состояния `users` и `onlineUsers`.
 	 */
 	useEffect(() => {
+		// Фильтруем пользователей, чтобы получить только онлайн-друзей, исключая текущего пользователя
 		const friendsArray = Object.values(users).filter(
 			(user) => user._id !== currentId && onlineUsers.includes(user._id)
 		);
@@ -70,6 +62,7 @@ const ChatOnline = ({ onlineUsers, currentId, setCurrentChat }) => {
 				const existingConversation = await getConversation(currentId, user._id);
 
 				if (existingConversation) {
+					// Если беседа существует, устанавливаем её как текущую
 					setCurrentChat(existingConversation);
 				} else {
 					// Создаем новую беседу, если её нет
@@ -77,7 +70,8 @@ const ChatOnline = ({ onlineUsers, currentId, setCurrentChat }) => {
 					setCurrentChat(newConversation);
 				}
 			} catch (err) {
-				console.error('Error handling click:', err);
+				// Логируем ошибку в случае сбоя
+				console.error('Нажмите кнопку "Обработка ошибок', err);
 			}
 		},
 		[currentId, setCurrentChat, getConversation, createConversation]
