@@ -1,6 +1,6 @@
 import useAuthStore from '../../store/useAuthStore';
 import useUserStore from '../../store/useUserStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SidebarList from '../SidebarList/SidebarList';
 import Friend from '../Friend/Friend';
 import { Skeleton } from '@mui/material';
@@ -8,11 +8,11 @@ import { Skeleton } from '@mui/material';
 import './sidebar.css';
 
 /**
- * Компонент для отображения боковой панели с навигацией и списком друзей.
- * @returns {JSX.Element} Компонент боковой панели.
+ * Компонент `Sidebar` отображает боковую панель с навигационным списком и списком друзей пользователя.
+ * @returns {JSX.Element} - Рендерит боковую панель с данными и списком друзей.
  */
 const Sidebar = () => {
-	// Получаем текущего пользователя из Store.
+	// Получаем текущего пользователя из Zustand store.
 	const user = useAuthStore((state) => state.user);
 	// Функция для загрузки данных пользователя по ID.
 	const fetchUser = useUserStore((state) => state.fetchUser);
@@ -20,8 +20,9 @@ const Sidebar = () => {
 	const getUserById = useUserStore((state) => state.getUserById);
 	// Флаг загрузки данных.
 	const isFetching = useUserStore((state) => state.isFetching);
-	// Сообщение об ошибке, если таковая имеется.
-	const error = useUserStore((state) => state.error);
+
+	// Локальный стейт для хранения данных друзей
+	const [friends, setFriends] = useState([]);
 
 	/**
 	 * Эффект для загрузки данных друзей пользователя при изменении `user` или его `followings`.
@@ -29,10 +30,22 @@ const Sidebar = () => {
 	 */
 	useEffect(() => {
 		if (user && user.followings) {
+			// Массив для хранения загруженных друзей
+			const friendsData = [];
+
 			// Для каждого ID друга проверяем, загружены ли данные в состояние.
 			user.followings.forEach((friendId) => {
-				if (!getUserById(friendId)) {
-					fetchUser(friendId); // Загружаем данные пользователя по ID.
+				const friend = getUserById(friendId);
+				if (!friend) {
+					// Загружаем данные пользователя по ID.
+					fetchUser(friendId).then(() => {
+						const newFriend = getUserById(friendId);
+						friendsData.push(newFriend); // Добавляем друга в массив
+						setFriends([...friendsData]); // Обновляем локальный стейт
+					});
+				} else {
+					friendsData.push(friend); // Если друг уже есть, добавляем его в массив
+					setFriends([...friendsData]); // Обновляем локальный стейт
 				}
 			});
 		}
@@ -43,9 +56,11 @@ const Sidebar = () => {
 		return (
 			<div className='sidebar'>
 				<div className='sidebarWrapper'>
-					<SidebarList isLoading={isFetching} />
+					<SidebarList isLoading={isFetching} />{' '}
+					{/* Передаем флаг загрузки в компонент SidebarList */}
 					<h2 className='sidebarMyFriend'>Мои друзья:</h2>
 					<div className='sidebarFriendList'>
+						{/* Отображаем скелетоны для индикатора загрузки списка друзей */}
 						{[...Array(5)].map((_, index) => (
 							<Skeleton
 								key={index}
@@ -60,9 +75,6 @@ const Sidebar = () => {
 			</div>
 		);
 
-	// Отображаем сообщение об ошибке, если произошла ошибка при загрузке данных.
-	if (error) return <p>Ошибка: {error}</p>;
-
 	return (
 		<div className='sidebar'>
 			<div className='sidebarWrapper'>
@@ -70,9 +82,9 @@ const Sidebar = () => {
 				<h2 className='sidebarMyFriend'>Мои друзья:</h2>
 				<ul className='sidebarFriendList'>
 					{/* Проверяем, есть ли друзья у пользователя */}
-					{user.followings && user.followings.length > 0 ? (
-						user.followings.map((friendId) => (
-							<Friend key={friendId} friendId={friendId} />
+					{friends.length > 0 ? (
+						friends.map((friend) => (
+							<Friend key={friend._id} friend={friend} /> // Передаем весь объект друга как пропс
 						))
 					) : (
 						<p>У вас пока нет друзей.</p>
