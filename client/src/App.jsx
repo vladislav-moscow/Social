@@ -1,39 +1,51 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import AppRoutes from "./components/AppRoutes/AppRoutes";
-import socket from './utils/socket.js'; 
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './components/AppRoutes/AppRoutes';
+import socket from './utils/socket.js';
 import { useEffect } from 'react';
-import useAuthStore from "./store/useAuthStore.js";
+import useAuthStore from './store/useAuthStore.js';
 
-
-//import Home from './pages/Home/Home';
-//import Login from './pages/Login/Login';
-//import Register from './pages/Register/Register';
-//import Profile from './pages/Profile/Profile';
+/**
+ * Корневой компонент приложения.
+ *
+ * Этот компонент устанавливает соединение с WebSocket сервером,
+ * обрабатывает обновление списка онлайн-пользователей и
+ * рендерит маршруты приложения внутри `Router`.
+ *
+ * @returns {JSX.Element} - Возвращает JSX элемент, содержащий маршруты приложения внутри `Router`.
+ */
 
 function App() {
+	// Извлечение текущего пользователя и функции для обновления списка онлайн-пользователей из Zustand store
 	const user = useAuthStore((state) => state.getUser());
-  const setOnlineUsers = useAuthStore((state) => state.setOnlineUsers);
+	const setOnlineUsers = useAuthStore((state) => state.setOnlineUsers);
 
 	useEffect(() => {
-    if (user) {
-      socket.emit('addUser', user._id);
+		// Проверяем, если пользователь аутентифицирован
+		if (user) {
+			// Уведомляем сервер о том, что пользователь зашел в систему
+			socket.emit('addUser', user._id);
 
-      socket.on('getUsers', (users) => {
-        setOnlineUsers(users.map((user) => user.userId));
-      });
-    }
-
-    return () => {
-      if (user) {
-        socket.emit('removeUser', user._id);
-      }
-      socket.off('getUsers');
-    };
-  }, [user, setOnlineUsers]);
+			// Обработка события получения списка онлайн-пользователей от сервера
+			socket.on('getUsers', (users) => {
+				// Обновляем состояние онлайн-пользователей в хранилище
+				setOnlineUsers(users.map((user) => user.userId));
+			});
+		}
+		// Очистка эффекта
+		return () => {
+			// Уведомляем сервер о том, что пользователь вышел из системы, если он аутентифицирован
+			if (user) {
+				socket.emit('removeUser', user._id);
+			}
+			// Отключаем обработчик события получения списка онлайн-пользователей при размонтировании компонента
+			socket.off('getUsers');
+		};
+	}, [user, setOnlineUsers]);
+	
 	return (
 		<Router>
-      <AppRoutes user={user}/>
-    </Router>
+			<AppRoutes user={user} />
+		</Router>
 	);
 }
 
