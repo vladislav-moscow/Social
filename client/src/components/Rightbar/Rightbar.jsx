@@ -120,7 +120,7 @@ const Rightbar = ({ user, currentUser }) => {
 						{/* Отображаем подписчиков пользователя */}
 						{followers.length > 0 ? (
 							followers.map((follower) => (
-								<Friend key={follower._id} friend={follower} /> // Передаем объект подписчика в компонент Friend
+								<Friend key={follower._id} friend={follower} />
 							))
 						) : (
 							<p>У вас пока нет подписчиков.</p>

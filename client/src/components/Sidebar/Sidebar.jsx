@@ -20,7 +20,6 @@ const Sidebar = () => {
 	const getUserById = useUserStore((state) => state.getUserById);
 	// Флаг загрузки данных.
 	const isFetching = useUserStore((state) => state.isFetching);
-
 	// Локальный стейт для хранения данных друзей
 	const [friends, setFriends] = useState([]);
 
@@ -84,7 +83,7 @@ const Sidebar = () => {
 					{/* Проверяем, есть ли друзья у пользователя */}
 					{friends.length > 0 ? (
 						friends.map((friend) => (
-							<Friend key={friend._id} friend={friend} /> // Передаем весь объект друга как пропс
+							<Friend key={friend._id} friend={friend} />
 						))
 					) : (
 						<p>У вас пока нет друзей.</p>

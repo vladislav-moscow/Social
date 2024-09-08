@@ -138,7 +138,7 @@ const Chat = () => {
 							<SidebarList />
 						</div>
 
-						<input placeholder='Search for friends' className='chatMenuInput' />
+						<input placeholder='поиск по друзья временно не работает' className='chatMenuInput' />
 						{conversations.map((c) => (
 							<div key={c._id} onClick={() => handleChatSelect(c)}>
 								<Conversation conversation={c} currentUser={user} />

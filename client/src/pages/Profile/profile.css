@@ -84,27 +84,27 @@
 }
 
 .profileBtnWrapper {
- margin-right: 300px;
+	margin-right: 300px;
 }
 
 .profileMessageBtn,
 .profileFollowingBtn {
 	margin-top: 30px;
-  margin-bottom: 10px;
-  border: none;
-  background-color: var(--mainColor);
-  color: white;
-  border-radius: 5px;
-  padding: 5px 10px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
+	margin-bottom: 10px;
+	border: none;
+	background-color: var(--mainColor);
+	color: white;
+	border-radius: 5px;
+	padding: 5px 10px;
+	display: flex;
+	align-items: center;
+	font-size: 16px;
+	font-weight: 500;
+	cursor: pointer;
 }
 
 .profileMessageBtn {
-	width: 224px;
+	width: 230px;
 }
 
 .profileMessageBtn:focus,

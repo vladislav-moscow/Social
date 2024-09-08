@@ -67,7 +67,7 @@ const Topbar = () => {
 				<div className='searchbar'>
 					<Search className='searchIcon' />
 					<input
-						placeholder='Поиск друзей, постов или видео'
+						placeholder='Поиск друзей, постов временно не работает'
 						className='searchInput'
 					/>
 				</div>
@@ -90,8 +90,8 @@ const Topbar = () => {
 				<div className='topbarProfile' onClick={toggleMenu}>
 					<img
 						src={
-							user.profilePicture
-								? PF + user.profilePicture
+							user?.profilePicture
+								? PF + user?.profilePicture
 								: PF + 'person/noAvatar.png'
 						}
 						alt='avatarPerson'

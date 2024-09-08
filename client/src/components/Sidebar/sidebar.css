@@ -1,9 +1,9 @@
 .sidebar {
 	flex: 3;
-	height: calc(100vh - 50px);
+	height: calc(100vh - 70px);
 	overflow-y: scroll;
 	position: sticky;
-	top: 50px;
+	top: 70px;
 }
 
 .sidebarWrapper {

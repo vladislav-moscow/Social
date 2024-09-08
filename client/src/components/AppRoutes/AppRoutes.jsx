@@ -12,7 +12,7 @@ const AppRoutes = ({user}) => {
 
 	return (
 		<Routes>
-			<Route path='/' element={user ? <Home /> : <Register />} />
+			<Route path='/' element={user ? <Home /> : <Register/>} />
 			<Route
 				path='/login'
 				element={user ? <Navigate to='/' replace /> : <Login />}
@@ -21,7 +21,8 @@ const AppRoutes = ({user}) => {
 				path='/register'
 				element={user ? <Navigate to='/' replace /> : <Register />}
 			/>
-			<Route path='/profile/:username' element={<Profile />} />
+			<Route path='/profile/:username' 
+			element={!user ? <Navigate to='/'replace /> : <Profile />} />
 			<Route
 				path='/chat'
 				element={!user ? <Navigate to='/' replace /> : <Chat />}

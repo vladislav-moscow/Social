@@ -11,6 +11,7 @@
 .chatMenuWrapper {
 	overflow-y: scroll;
 	position: sticky;
+	top: 70px;
 }
 
 .chatMenuInput {

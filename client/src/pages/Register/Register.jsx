@@ -87,7 +87,7 @@ const Register = () => {
 					</span>
 				</div>
 				<div className='loginRight'>
-					<form className='loginBox' onSubmit={handleClick}>
+					<form className='registerBox' onSubmit={handleClick}>
 						<input
 							ref={username}
 							placeholder='Ваше имя'

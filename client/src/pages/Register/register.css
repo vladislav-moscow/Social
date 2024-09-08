@@ -1,7 +1,7 @@
 .login {
 	width: 100vw;
 	height: 100vh;
-	background-image: url(post/bg.jpg);
+	background-image: url(http://localhost:6600/images/post/bg.jpg);
 	background-size: cover;
 	display: flex;
 	align-items: center;
@@ -33,14 +33,14 @@
 	font-size: 24px;
 }
 
-.loginBox {
-	height: 400px;
+.registerBox {
 	padding: 20px;
 	background-color: white;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+	gap: 20px;
 }
 
 .loginInput {
@@ -74,7 +74,6 @@
 
 .loginRegisterButton {
 	align-self: center;
-	height: 50px;
 	color: var(--mainColor);
 	font-size: 16px;
 	font-weight: 500;
